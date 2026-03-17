@@ -57,22 +57,34 @@ export default function Layout() {
         style={{ background: "#1E3A5F" }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
+        <div 
+          className={`flex items-center border-b border-white/10 py-5 transition-all ${
+            sidebarOpen ? "px-4 gap-3" : "justify-center cursor-pointer hover:bg-white/5"
+          }`}
+          onClick={() => !sidebarOpen && setSidebarOpen(true)}
+          title={!sidebarOpen ? "Expandir menu" : ""}
+        >
           <div className="w-9 h-9 bg-blue-400/30 rounded-xl flex items-center justify-center flex-shrink-0">
             <Store className="w-5 h-5 text-blue-200" />
           </div>
+          
           {sidebarOpen && (
-            <div className="overflow-hidden">
-              <p className="text-white text-sm" style={{ fontWeight: 700 }}>SGC</p>
-              <p className="text-blue-300" style={{ fontSize: 10 }}>Gestão Comercial</p>
-            </div>
+            <>
+              <div className="overflow-hidden">
+                <p className="text-white text-sm" style={{ fontWeight: 700 }}>SGC</p>
+                <p className="text-blue-300" style={{ fontSize: 10 }}>Gestão Comercial</p>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Evita que o clique no X também dispare o onClick da div pai
+                  setSidebarOpen(false);
+                }}
+                className="ml-auto text-blue-300 hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </>
           )}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="ml-auto text-blue-300 hover:text-white transition-colors"
-          >
-            {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </button>
         </div>
 
         {/* Role badge */}
@@ -87,7 +99,7 @@ export default function Layout() {
               style={{ fontWeight: 600 }}
             >
               <span className="w-2 h-2 rounded-full bg-current" />
-              {user.role === "gestor" ? "👔 Gestor" : "🧑‍💼 Vendedor"}
+              {user.role === "gestor" ? " Gestor" : " Vendedor"}
             </div>
           </div>
         )}
@@ -173,13 +185,6 @@ export default function Layout() {
 
           {sidebarOpen && (
             <div className="flex items-center gap-3 px-3 py-2">
-              <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-xs" style={{ fontWeight: 700 }}>{user.avatar}</span>
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-white text-xs truncate" style={{ fontWeight: 600 }}>{user.name}</p>
-                <p className="text-blue-400 truncate" style={{ fontSize: 10 }}>{user.email}</p>
-              </div>
             </div>
           )}
         </div>
