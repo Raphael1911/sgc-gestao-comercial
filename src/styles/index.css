@@ -1,3 +1,14 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+.uwy, 
+div[id^="userway"],
+.uwy:hover, 
+div[id^="userway"]:hover,
+.uwy:focus-within,
+div[id^="userway"]:focus-within {
+  right: -10px !important; /* NOTA: Aqui tu pode mexer na posição vertical do botao do userway */
+  top: 400px !important; /* Nota: aqui é a posicao vertical do botao userway */
+}
+
