@@ -101,7 +101,7 @@ export default function Login() {
                     }`}
                     style={{ fontWeight: 600 }}
                   >
-                    {r === "gestor" ? "👔 Gestor" : "🧑‍💼 Vendedor"}
+                    {r === "gestor" ? " Gestor" : " Vendedor"}
                   </button>
                 ))}
               </div>
@@ -167,13 +167,13 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
-            <p className="text-xs text-blue-700" style={{ fontWeight: 600 }}>💡 Demonstração</p>
+          {/* <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+            {/* <p className="text-xs text-blue-700" style={{ fontWeight: 600 }}>💡 Demonstração</p>
             <p className="text-xs text-blue-600 mt-1">
               <strong>Gestor:</strong> gestor@sgc.com &nbsp;|&nbsp; <strong>Vendedor:</strong> vendedor@sgc.com
             </p>
-            <p className="text-xs text-blue-500 mt-0.5">Qualquer senha para entrar.</p>
-          </div>
+            <p className="text-xs text-blue-500 mt-0.5">Qualquer senha para entrar.</p> */}
+          {/* </div> */}
         </div>
       </div>
     </div>
