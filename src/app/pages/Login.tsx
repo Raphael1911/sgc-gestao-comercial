@@ -128,9 +128,14 @@ export default function Login() {
                 <label className="text-xs text-gray-500" style={{ fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                   Senha
                 </label>
-                <a href="#" className="text-xs text-blue-600 hover:underline" style={{ fontWeight: 500 }}>
+                <button
+                  type="button"
+                  onClick={() => navigate("/forgot-password")}
+                  className="text-xs text-blue-600 hover:underline"
+                  style={{ fontWeight: 500 }}
+                >
                   Esqueceu a senha?
-                </a>
+                </button>
               </div>
               <div className="relative">
                 <input
