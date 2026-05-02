@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   Plus,
@@ -13,8 +13,10 @@ import {
   Filter,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import { buscarItens, criarItem, atualizarItem, deletarItem } from "../../services/api";
 
 interface Product {
+  _id?: string;
   id: string;
   code: string;
   name: string;
@@ -25,21 +27,6 @@ interface Product {
   minStock: number;
   unit: string;
 }
-
-const INITIAL_PRODUCTS: Product[] = [
-  { id: "1", code: "7891000053508", name: "Coca-Cola 2L", category: "Bebidas", price: 9.99, cost: 6.50, stock: 24, minStock: 10, unit: "un" },
-  { id: "2", code: "7891000100103", name: "Coca-Cola Lata 350ml", category: "Bebidas", price: 4.50, cost: 2.80, stock: 48, minStock: 20, unit: "un" },
-  { id: "3", code: "7891910000197", name: "Água Mineral 500ml", category: "Bebidas", price: 2.50, cost: 1.20, stock: 60, minStock: 30, unit: "un" },
-  { id: "4", code: "7894900011517", name: "Guaraná Antarctica 2L", category: "Bebidas", price: 8.90, cost: 5.80, stock: 18, minStock: 10, unit: "un" },
-  { id: "5", code: "7891149900025", name: "Suco Del Valle Laranja", category: "Bebidas", price: 6.99, cost: 4.10, stock: 30, minStock: 15, unit: "un" },
-  { id: "6", code: "7622210951694", name: "Biscoito Oreo Original", category: "Snacks", price: 5.99, cost: 3.50, stock: 4, minStock: 10, unit: "pct" },
-  { id: "7", code: "7891962022108", name: "Barra Cereal Duo Figo", category: "Snacks", price: 3.49, cost: 1.90, stock: 20, minStock: 15, unit: "un" },
-  { id: "8", code: "7896004004059", name: "Chips Lays Original 100g", category: "Snacks", price: 7.90, cost: 4.80, stock: 2, minStock: 8, unit: "pct" },
-  { id: "9", code: "5099873013106", name: "Red Bull 250ml", category: "Energéticos", price: 12.90, cost: 8.50, stock: 1, minStock: 5, unit: "un" },
-  { id: "10", code: "7896004004067", name: "Monster Energy 473ml", category: "Energéticos", price: 10.90, cost: 7.20, stock: 12, minStock: 8, unit: "un" },
-  { id: "11", code: "7896214531022", name: "Paracetamol 750mg", category: "Farmácia", price: 14.90, cost: 8.00, stock: 35, minStock: 10, unit: "cx" },
-  { id: "12", code: "7896748000117", name: "Shampoo Clear 400ml", category: "Higiene", price: 18.90, cost: 11.50, stock: 8, minStock: 5, unit: "un" },
-];
 
 const EMPTY_PRODUCT: Omit<Product, "id"> = {
   code: "",
@@ -64,7 +51,7 @@ export default function Inventory() {
   const { user } = useApp();
   const isGestor = user?.role === "gestor";
 
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("Todos");
   const [filterStatus, setFilterStatus] = useState("Todos");
@@ -74,6 +61,23 @@ export default function Inventory() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [sortField, setSortField] = useState<keyof Product>("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  useEffect(() => {
+    carregarProdutos();
+  }, []);
+
+  const carregarProdutos = async () => {
+    try {
+      const dados = await buscarItens();
+      const itensFormatados = dados.map((item: any) => ({
+        ...item,
+        id: item._id 
+      }));
+      setProducts(itensFormatados);
+    } catch (error) {
+      console.error("Falha ao carregar produtos:", error);
+    }
+  };
 
   const openCreate = () => {
     setEditProduct(null);
@@ -87,23 +91,29 @@ export default function Inventory() {
     setShowModal(true);
   };
 
-  const saveProduct = () => {
-    if (editProduct) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === editProduct.id ? { ...formData, id: editProduct.id } : p))
-      );
-    } else {
-      setProducts((prev) => [
-        ...prev,
-        { ...formData, id: Date.now().toString() },
-      ]);
+ const saveProduct = async () => {
+    try {
+      if (editProduct && editProduct.id) {
+        await atualizarItem(editProduct.id, formData);
+      } else {
+        await criarItem(formData);
+      }
+      await carregarProdutos(); 
+      setShowModal(false);
+    } catch (error) {
+      console.error("Erro ao salvar produto:", error);
+      alert("Erro ao salvar produto. Verifique o console.");
     }
-    setShowModal(false);
   };
 
-  const deleteProduct = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    setDeleteConfirm(null);
+  const deleteProduct = async (id: string) => {
+    try {
+      await deletarItem(id);
+      await carregarProdutos(); // Recarrega após excluir
+      setDeleteConfirm(null);
+    } catch (error) {
+      console.error("Erro ao deletar:", error);
+    }
   };
 
   const handleSort = (field: keyof Product) => {
