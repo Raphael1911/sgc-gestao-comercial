@@ -9,6 +9,6 @@ div[id^="userway"]:hover,
 .uwy:focus-within,
 div[id^="userway"]:focus-within {
   right: -10px !important; /* NOTA: Aqui tu pode mexer na posição vertical do botao do userway */
-  top: 700px !important; /* Nota: aqui é a posicao vertical do botao userway */
+  top: 480px !important; /* Nota: aqui é a posicao vertical do botao userway */
 }
 
