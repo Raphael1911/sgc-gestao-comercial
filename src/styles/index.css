@@ -1,7 +1,7 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
-
+@custom-variant dark (&:is(.dark *));
 .uwy, 
 div[id^="userway"],
 .uwy:hover, 
