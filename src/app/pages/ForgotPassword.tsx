@@ -16,26 +16,20 @@ export default function ForgotPassword() {
     setError("");
     setMessage("");
 
-    // Simulação de envio (substitua por chamada real ao backend)
-    await new Promise((r) => setTimeout(r, 1000)); // Mock delay
+    // Simulação de envio
+    await new Promise((r) => setTimeout(r, 1000)); 
 
-    // Aqui você chamaria o backend para gerar token e enviar email
-    // Exemplo: await fetch('/api/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
-    // Se sucesso, setMessage("Email enviado! Verifique sua caixa de entrada.");
-    // Se erro, setError("Erro ao enviar email. Tente novamente.");
-
-    // Mock: Sempre "sucesso" para demonstração
-    const mockToken = "abc123"; // Em produção, gere um token real
-    const resetLink = `http://localhost:5173/reset-password?token=${mockToken}`;
-    console.log("Link de redefinição (mock):", resetLink); // Para copiar e testar
-    setMessage(`Email enviado! Link mock: ${resetLink} (verifique console para copiar).`);
+    const mockToken = "abc123";
+    console.log("Link de redefinição (mock):", `http://localhost:5173/reset-password?token=${mockToken}`); 
+    
+    // Mensagem limpa e profissional
+    setMessage("Email enviado com sucesso! Verifique sua caixa de entrada.");
     setLoading(false);
   };
 
   return (
-    // Fundo atualizado com Tailwind para o degradê funcionar no modo escuro
     <div className="min-h-screen flex relative bg-gradient-to-br from-[#1E3A5F] via-[#2D5282] to-[#2B6CB0] dark:from-gray-900 dark:via-slate-900 dark:to-black transition-colors duration-500">
-      {/* Left panel - Mesmo do Login */}
+      {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-center items-start px-16 w-1/2 text-white">
         <div className="flex items-center gap-3 mb-10">
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -55,7 +49,6 @@ export default function ForgotPassword() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-10 relative transition-colors">
           
-          {/* Botão de Tema no canto superior direito do card */}
           <div className="absolute top-6 right-6 z-10">
             <ThemeToggle />
           </div>
@@ -96,8 +89,17 @@ export default function ForgotPassword() {
             )}
 
             {message && (
-              <div className="bg-green-50 dark:bg-emerald-900/30 border border-green-200 dark:border-emerald-800 text-green-600 dark:text-emerald-400 text-sm px-4 py-3 rounded-xl break-all transition-colors">
-                {message}
+              <div className="bg-green-50 dark:bg-emerald-900/30 border border-green-200 dark:border-emerald-800 text-green-600 dark:text-emerald-400 text-sm px-4 py-3 rounded-xl transition-colors flex flex-col gap-2">
+                <p style={{ fontWeight: 600 }}>{message}</p>
+                {/* Botão sutil para a demonstração */}
+                <button
+                  type="button"
+                  onClick={() => navigate("/reset-password?token=abc123")}
+                  className="text-left text-emerald-700 dark:text-emerald-300 underline hover:opacity-80 transition-opacity"
+                  style={{ fontSize: 12, fontWeight: 700 }}
+                >
+                  [Modo Demo] Acessar link de redefinição
+                </button>
               </div>
             )}
 
