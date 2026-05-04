@@ -40,9 +40,9 @@ const EMPTY_PRODUCT: Omit<Product, "id"> = {
 };
 
 function getStockStatus(stock: number, minStock: number) {
-  if (stock === 0) return { label: "Sem Estoque", color: "#EF4444", bg: "#FEF2F2" };
-  if (stock <= minStock) return { label: "Estoque Baixo", color: "#F59E0B", bg: "#FFFBEB" };
-  return { label: "Normal", color: "#10B981", bg: "#ECFDF5" };
+  if (stock === 0) return { label: "Sem Estoque", color: "#EF4444" };
+  if (stock <= minStock) return { label: "Estoque Baixo", color: "#F59E0B" };
+  return { label: "Normal", color: "#10B981" };
 }
 
 const CATEGORIES = ["Bebidas", "Snacks", "Energéticos", "Farmácia", "Higiene", "Outros"];
@@ -91,7 +91,7 @@ export default function Inventory() {
     setShowModal(true);
   };
 
- const saveProduct = async () => {
+  const saveProduct = async () => {
     try {
       if (editProduct && editProduct.id) {
         await atualizarItem(editProduct.id, formData);
@@ -149,7 +149,7 @@ export default function Inventory() {
   const lowCount = products.filter((p) => p.stock <= p.minStock).length;
 
   const SortIcon = ({ field }: { field: keyof Product }) => {
-    if (sortField !== field) return <ChevronUp className="w-3 h-3 text-gray-300" />;
+    if (sortField !== field) return <ChevronUp className="w-3 h-3 text-gray-300 dark:text-gray-600" />;
     return sortDir === "asc"
       ? <ChevronUp className="w-3 h-3 text-blue-500" />
       : <ChevronDown className="w-3 h-3 text-blue-500" />;
@@ -160,10 +160,10 @@ export default function Inventory() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontWeight: 700, fontSize: 22 }}>
+          <h1 className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 22 }}>
             Gestão de Estoque
           </h1>
-          <p className="text-gray-400 text-sm mt-0.5">{products.length} produtos cadastrados</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm mt-0.5">{products.length} produtos cadastrados</p>
         </div>
         {isGestor && (
           <button
@@ -185,14 +185,14 @@ export default function Inventory() {
           { label: "Valor em Estoque", value: `R$ ${products.reduce((a, p) => a + p.cost * p.stock, 0).toLocaleString("pt-BR", { minimumFractionDigits: 0 })}`, color: "#10B981", icon: Package },
           { label: "Categorias", value: new Set(products.map((p) => p.category)).size, color: "#8B5CF6", icon: Filter },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+          <div key={s.label} className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: s.color + "18" }}>
                 <s.icon className="w-4 h-4" style={{ color: s.color }} />
               </div>
               <div>
-                <p className="text-gray-400" style={{ fontSize: 11, fontWeight: 600 }}>{s.label}</p>
-                <p className="text-gray-900" style={{ fontWeight: 700, fontSize: 18 }}>{s.value}</p>
+                <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: 11, fontWeight: 600 }}>{s.label}</p>
+                <p className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 18 }}>{s.value}</p>
               </div>
             </div>
           </div>
@@ -200,8 +200,8 @@ export default function Inventory() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="flex flex-wrap items-center gap-3 p-4 border-b border-gray-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden transition-colors">
+        <div className="flex flex-wrap items-center gap-3 p-4 border-b border-gray-50 dark:border-gray-700/50">
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -209,13 +209,13 @@ export default function Inventory() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome ou código..."
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             />
           </div>
           <select
             value={filterCat}
             onChange={(e) => setFilterCat(e.target.value)}
-            className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             style={{ fontWeight: 500 }}
           >
             <option value="Todos">Todas categorias</option>
@@ -224,21 +224,21 @@ export default function Inventory() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
             style={{ fontWeight: 500 }}
           >
             <option value="Todos">Todos os níveis</option>
             <option value="baixo">⚠️ Estoque Baixo</option>
             <option value="normal">✅ Normal</option>
           </select>
-          <span className="text-xs text-gray-400 ml-auto">{filtered.length} resultado(s)</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto">{filtered.length} resultado(s)</span>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
+              <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700/50">
                 {[
                   { key: "code", label: "Código" },
                   { key: "name", label: "Produto" },
@@ -250,7 +250,7 @@ export default function Inventory() {
                   <th
                     key={col.key}
                     onClick={() => handleSort(col.key as keyof Product)}
-                    className="text-left px-5 py-3 text-xs text-gray-400 cursor-pointer hover:text-gray-600 select-none"
+                    className="text-left px-5 py-3 text-xs text-gray-400 dark:text-gray-500 cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 select-none transition-colors"
                     style={{ fontWeight: 600 }}
                   >
                     <div className="flex items-center gap-1">
@@ -259,9 +259,9 @@ export default function Inventory() {
                     </div>
                   </th>
                 ))}
-                <th className="text-left px-5 py-3 text-xs text-gray-400" style={{ fontWeight: 600 }}>Status</th>
+                <th className="text-left px-5 py-3 text-xs text-gray-400 dark:text-gray-500" style={{ fontWeight: 600 }}>Status</th>
                 {isGestor && (
-                  <th className="text-right px-5 py-3 text-xs text-gray-400" style={{ fontWeight: 600 }}>Ações</th>
+                  <th className="text-right px-5 py-3 text-xs text-gray-400 dark:text-gray-500" style={{ fontWeight: 600 }}>Ações</th>
                 )}
               </tr>
             </thead>
@@ -271,37 +271,37 @@ export default function Inventory() {
                 return (
                   <tr
                     key={product.id}
-                    className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+                    className="border-b border-gray-50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors"
                   >
-                    <td className="px-5 py-3.5 text-xs text-gray-400" style={{ fontFamily: "monospace" }}>
+                    <td className="px-5 py-3.5 text-xs text-gray-400 dark:text-gray-500" style={{ fontFamily: "monospace" }}>
                       {product.code.slice(-8)}
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Package className="w-4 h-4 text-blue-400" />
+                        <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
+                          <Package className="w-4 h-4 text-blue-400 dark:text-blue-500" />
                         </div>
                         <div>
-                          <p className="text-sm text-gray-800" style={{ fontWeight: 600 }}>{product.name}</p>
-                          <p className="text-xs text-gray-400">{product.unit}</p>
+                          <p className="text-sm text-gray-900 dark:text-white" style={{ fontWeight: 600 }}>{product.name}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">{product.unit}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="inline-flex px-2.5 py-1 rounded-full text-xs bg-blue-50 text-blue-600" style={{ fontWeight: 600 }}>
+                      <span className="inline-flex px-2.5 py-1 rounded-full text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors" style={{ fontWeight: 600 }}>
                         {product.category}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 text-sm text-gray-800" style={{ fontWeight: 600 }}>
+                    <td className="px-5 py-3.5 text-sm text-gray-900 dark:text-white" style={{ fontWeight: 600 }}>
                       R$ {product.price.toFixed(2).replace(".", ",")}
                     </td>
-                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                    <td className="px-5 py-3.5 text-sm text-gray-500 dark:text-gray-400">
                       R$ {product.cost.toFixed(2).replace(".", ",")}
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-800" style={{ fontWeight: 600 }}>{product.stock}</span>
-                        <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <span className="text-sm text-gray-900 dark:text-white" style={{ fontWeight: 600 }}>{product.stock}</span>
+                        <div className="w-16 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full transition-all"
                             style={{
@@ -316,7 +316,7 @@ export default function Inventory() {
                       <span
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs"
                         style={{
-                          background: status.bg,
+                          background: status.color + "18", // 12% opacity adaptável aos 2 temas
                           color: status.color,
                           fontWeight: 600,
                         }}
@@ -330,15 +330,15 @@ export default function Inventory() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openEdit(product)}
-                            className="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-100 flex items-center justify-center transition-colors"
+                            className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 flex items-center justify-center transition-colors"
                           >
-                            <Edit2 className="w-3.5 h-3.5 text-blue-600" />
+                            <Edit2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                           </button>
                           <button
                             onClick={() => setDeleteConfirm(product.id)}
-                            className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
+                            className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 flex items-center justify-center transition-colors"
                           >
-                            <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                            <Trash2 className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
                           </button>
                         </div>
                       </td>
@@ -350,7 +350,7 @@ export default function Inventory() {
           </table>
 
           {filtered.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-300">
+            <div className="flex flex-col items-center justify-center py-16 text-gray-300 dark:text-gray-600">
               <Package className="w-10 h-10 mb-3" />
               <p className="text-sm">Nenhum produto encontrado</p>
             </div>
@@ -360,99 +360,99 @@ export default function Inventory() {
 
       {/* Modal — Create/Edit */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h3 className="text-gray-800" style={{ fontWeight: 700, fontSize: 18 }}>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 18 }}>
                 {editProduct ? "Editar Produto" : "Novo Produto"}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center transition-colors"
               >
-                <X className="w-4 h-4 text-gray-500" />
+                <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
 
             <div className="p-6 flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-xs text-gray-500 mb-1.5" style={{ fontWeight: 600 }}>Nome do Produto *</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600 }}>Nome do Produto *</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     placeholder="Ex: Coca-Cola 2L"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5" style={{ fontWeight: 600 }}>Código de Barras</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600 }}>Código de Barras</label>
                   <input
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                     placeholder="EAN-13"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5" style={{ fontWeight: 600 }}>Categoria</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600 }}>Categoria</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   >
                     {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5" style={{ fontWeight: 600 }}>Preço de Venda (R$)</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600 }}>Preço de Venda (R$)</label>
                   <input
                     type="number"
                     min={0}
                     step={0.01}
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5" style={{ fontWeight: 600 }}>Custo (R$)</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600 }}>Custo (R$)</label>
                   <input
                     type="number"
                     min={0}
                     step={0.01}
                     value={formData.cost}
                     onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) || 0 })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5" style={{ fontWeight: 600 }}>Qtd. em Estoque</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600 }}>Qtd. em Estoque</label>
                   <input
                     type="number"
                     min={0}
                     value={formData.stock}
                     onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5" style={{ fontWeight: 600 }}>Estoque Mínimo</label>
+                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600 }}>Estoque Mínimo</label>
                   <input
                     type="number"
                     min={0}
                     value={formData.minStock}
                     onChange={(e) => setFormData({ ...formData, minStock: parseInt(e.target.value) || 0 })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   />
                 </div>
               </div>
 
               {formData.price > 0 && formData.cost > 0 && (
-                <div className="bg-emerald-50 rounded-xl px-4 py-3 border border-emerald-100">
-                  <p className="text-emerald-700 text-xs" style={{ fontWeight: 600 }}>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl px-4 py-3 border border-emerald-100 dark:border-emerald-800/30">
+                  <p className="text-emerald-700 dark:text-emerald-400 text-xs" style={{ fontWeight: 600 }}>
                     Margem de lucro: {(((formData.price - formData.cost) / formData.price) * 100).toFixed(1)}%
                     &nbsp;(+R$ {(formData.price - formData.cost).toFixed(2).replace(".", ",")} por unidade)
                   </p>
@@ -463,7 +463,7 @@ export default function Inventory() {
             <div className="flex gap-3 p-6 pt-0">
               <button
                 onClick={() => setShowModal(false)}
-                className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 text-sm hover:bg-gray-50 transition-colors"
+                className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 style={{ fontWeight: 600 }}
               >
                 Cancelar
@@ -484,21 +484,21 @@ export default function Inventory() {
 
       {/* Delete confirm modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl">
-            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-5">
-              <Trash2 className="w-6 h-6 text-red-500" />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-sm w-full p-8 shadow-2xl">
+            <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Trash2 className="w-6 h-6 text-red-500 dark:text-red-400" />
             </div>
-            <h3 className="text-gray-800 text-center mb-2" style={{ fontWeight: 700, fontSize: 18 }}>
+            <h3 className="text-gray-900 dark:text-white text-center mb-2" style={{ fontWeight: 700, fontSize: 18 }}>
               Excluir Produto?
             </h3>
-            <p className="text-gray-500 text-sm text-center mb-6">
+            <p className="text-gray-500 dark:text-gray-400 text-sm text-center mb-6">
               Esta ação é permanente e não pode ser desfeita.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-3 rounded-xl border border-gray-200 text-gray-600 text-sm hover:bg-gray-50"
+                className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 style={{ fontWeight: 600 }}
               >
                 Cancelar

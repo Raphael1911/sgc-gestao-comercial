@@ -19,6 +19,7 @@ import {
   Download,
   Calendar,
   ArrowUpRight,
+  ArrowDownRight,
   DollarSign,
   ShoppingBag,
   Package,
@@ -63,19 +64,21 @@ export default function Reports() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontWeight: 700, fontSize: 22 }}>
+          <h1 className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 22 }}>
             Relatórios
           </h1>
-          <p className="text-gray-400 text-sm mt-0.5">Análise financeira e de desempenho</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm mt-0.5">Análise financeira e de desempenho</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1">
+          <div className="flex gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-1 transition-colors">
             {["semanal", "mensal", "anual"].map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
                 className={`px-4 py-1.5 rounded-lg text-xs transition-all capitalize ${
-                  period === p ? "bg-blue-600 text-white shadow-sm" : "text-gray-500 hover:text-gray-700"
+                  period === p 
+                    ? "bg-blue-600 text-white shadow-sm" 
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 }`}
                 style={{ fontWeight: 600 }}
               >
@@ -84,7 +87,7 @@ export default function Reports() {
             ))}
           </div>
           <button
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             style={{ fontWeight: 600 }}
           >
             <Download className="w-4 h-4" />
@@ -101,25 +104,25 @@ export default function Reports() {
           { label: "Ticket Médio", value: "R$ 67,40", trend: "-3%", icon: ShoppingBag, color: "#3B82F6" },
           { label: "Produtos Vendidos", value: "716 un.", trend: "+15%", icon: Package, color: "#8B5CF6" },
         ].map((k) => (
-          <div key={k.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div key={k.label} className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
             <div className="flex items-center justify-between mb-3">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: k.color + "18" }}>
                 <k.icon className="w-4 h-4" style={{ color: k.color }} />
               </div>
               <span
-                className="text-xs flex items-center gap-0.5 px-2 py-1 rounded-full"
-                style={{
-                  background: k.trend.startsWith("+") ? "#ECFDF5" : "#FEF2F2",
-                  color: k.trend.startsWith("+") ? "#10B981" : "#EF4444",
-                  fontWeight: 600,
-                }}
+                className={`text-xs flex items-center gap-0.5 px-2 py-1 rounded-full ${
+                  k.trend.startsWith("+") 
+                    ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400" 
+                    : "bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400"
+                }`}
+                style={{ fontWeight: 600 }}
               >
-                <ArrowUpRight className="w-3 h-3" />
+                {k.trend.startsWith("+") ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                 {k.trend}
               </span>
             </div>
-            <p className="text-gray-400 text-xs mb-1" style={{ fontWeight: 500 }}>{k.label}</p>
-            <p className="text-gray-900" style={{ fontWeight: 700, fontSize: 20 }}>{k.value}</p>
+            <p className="text-gray-400 dark:text-gray-500 text-xs mb-1" style={{ fontWeight: 500 }}>{k.label}</p>
+            <p className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 20 }}>{k.value}</p>
           </div>
         ))}
       </div>
@@ -127,11 +130,11 @@ export default function Reports() {
       {/* Charts row 1 */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Revenue vs Cost */}
-        <div className="xl:col-span-2 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-gray-800" style={{ fontWeight: 700 }}>Receita × Despesas × Lucro</h3>
-              <p className="text-gray-400 text-xs mt-0.5">Evolução mensal 2025</p>
+              <h3 className="text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>Receita × Despesas × Lucro</h3>
+              <p className="text-gray-400 dark:text-gray-500 text-xs mt-0.5">Evolução mensal 2025</p>
             </div>
             <div className="flex items-center gap-4 text-xs">
               {[
@@ -139,7 +142,7 @@ export default function Reports() {
                 { label: "Despesas", color: "#EF4444" },
                 { label: "Lucro", color: "#10B981" },
               ].map((l) => (
-                <span key={l.label} className="flex items-center gap-1.5 text-gray-400">
+                <span key={l.label} className="flex items-center gap-1.5 text-gray-400 dark:text-gray-400">
                   <span className="w-3 h-2 rounded-sm inline-block" style={{ background: l.color }} />
                   {l.label}
                 </span>
@@ -148,12 +151,12 @@ export default function Reports() {
           </div>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={MONTHLY_DATA} barSize={14} barCategoryGap="30%">
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.2} />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(0)}k`} />
               <Tooltip
                 formatter={(v: number) => [`R$ ${v.toLocaleString("pt-BR")}`, ""]}
-                contentStyle={{ borderRadius: 12, border: "1px solid #E5E7EB", fontSize: 12 }}
+                contentStyle={{ borderRadius: 12, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
               />
               <Bar dataKey="receita" fill="#1E3A5F" radius={[4, 4, 0, 0]} />
               <Bar dataKey="despesas" fill="#FCA5A5" radius={[4, 4, 0, 0]} />
@@ -163,9 +166,9 @@ export default function Reports() {
         </div>
 
         {/* Payment methods donut */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="text-gray-800 mb-1" style={{ fontWeight: 700 }}>Formas de Pagamento</h3>
-          <p className="text-gray-400 text-xs mb-5">Distribuição no período</p>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
+          <h3 className="text-gray-800 dark:text-white mb-1" style={{ fontWeight: 700 }}>Formas de Pagamento</h3>
+          <p className="text-gray-400 dark:text-gray-500 text-xs mb-5">Distribuição no período</p>
           <ResponsiveContainer width="100%" height={170}>
             <PieChart>
               <Pie
@@ -181,7 +184,7 @@ export default function Reports() {
                   <Cell key={i} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(v: number) => [`${v}%`, ""]} contentStyle={{ borderRadius: 10, fontSize: 12, border: "1px solid #E5E7EB" }} />
+              <Tooltip formatter={(v: number) => [`${v}%`, ""]} contentStyle={{ borderRadius: 10, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }} />
             </PieChart>
           </ResponsiveContainer>
           <div className="flex flex-col gap-2 mt-2">
@@ -189,9 +192,9 @@ export default function Reports() {
               <div key={m.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: m.color }} />
-                  <span className="text-xs text-gray-600">{m.name}</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">{m.name}</span>
                 </div>
-                <span className="text-xs text-gray-800" style={{ fontWeight: 700 }}>{m.value}%</span>
+                <span className="text-xs text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>{m.value}%</span>
               </div>
             ))}
           </div>
@@ -201,17 +204,17 @@ export default function Reports() {
       {/* Charts row 2 */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Daily trend */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="text-gray-800 mb-1" style={{ fontWeight: 700 }}>Tendência Diária de Vendas</h3>
-          <p className="text-gray-400 text-xs mb-5">Julho 2025</p>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
+          <h3 className="text-gray-800 dark:text-white mb-1" style={{ fontWeight: 700 }}>Tendência Diária de Vendas</h3>
+          <p className="text-gray-400 dark:text-gray-500 text-xs mb-5">Julho 2025</p>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={DAILY_TREND}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.2} />
               <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(1)}k`} />
               <Tooltip
                 formatter={(v: number) => [`R$ ${v.toLocaleString("pt-BR")}`, "Vendas"]}
-                contentStyle={{ borderRadius: 12, border: "1px solid #E5E7EB", fontSize: 12 }}
+                contentStyle={{ borderRadius: 12, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
               />
               <Line
                 type="monotone"
@@ -226,9 +229,9 @@ export default function Reports() {
         </div>
 
         {/* Category ranking */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="text-gray-800 mb-1" style={{ fontWeight: 700 }}>Ranking por Categoria</h3>
-          <p className="text-gray-400 text-xs mb-5">Faturamento por linha de produto</p>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
+          <h3 className="text-gray-800 dark:text-white mb-1" style={{ fontWeight: 700 }}>Ranking por Categoria</h3>
+          <p className="text-gray-400 dark:text-gray-500 text-xs mb-5">Faturamento por linha de produto</p>
           <div className="flex flex-col gap-4">
             {TOP_CATEGORIES.map((cat, i) => (
               <div key={cat.name} className="flex items-center gap-3">
@@ -240,12 +243,12 @@ export default function Reports() {
                 </span>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-700" style={{ fontWeight: 600 }}>{cat.name}</span>
-                    <span className="text-xs text-gray-500" style={{ fontWeight: 600 }}>
+                    <span className="text-xs text-gray-700 dark:text-gray-200" style={{ fontWeight: 600 }}>{cat.name}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400" style={{ fontWeight: 600 }}>
                       R$ {cat.vendas.toLocaleString("pt-BR")}
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{
@@ -255,7 +258,7 @@ export default function Reports() {
                     />
                   </div>
                 </div>
-                <span className="text-xs text-gray-400 w-8 text-right" style={{ fontWeight: 600 }}>
+                <span className="text-xs text-gray-400 dark:text-gray-500 w-8 text-right" style={{ fontWeight: 600 }}>
                   {cat.pct}%
                 </span>
               </div>

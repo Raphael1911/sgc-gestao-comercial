@@ -12,9 +12,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
-  LineChart,
-  Line,
 } from "recharts";
 import {
   TrendingUp,
@@ -91,7 +88,8 @@ function KPICard({
   color: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+    // Aplicando padrão de fundo e borda
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div
           className="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -100,10 +98,11 @@ function KPICard({
           <Icon className="w-5 h-5" style={{ color }} />
         </div>
         <div
+          // Ajustando o fundo das badges de tendência no dark mode para não ficarem "brilhantes" demais
           className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
             trend === "up"
-              ? "bg-emerald-50 text-emerald-600"
-              : "bg-red-50 text-red-500"
+              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
+              : "bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400"
           }`}
           style={{ fontWeight: 600 }}
         >
@@ -115,13 +114,14 @@ function KPICard({
           {trendValue}
         </div>
       </div>
-      <p className="text-gray-500 text-xs mb-1" style={{ fontWeight: 500 }}>
+      <p className="text-gray-500 dark:text-gray-400 text-xs mb-1" style={{ fontWeight: 500 }}>
         {title}
       </p>
-      <p className="text-gray-900 mb-1" style={{ fontWeight: 700, fontSize: 22 }}>
+      {/* Texto principal ajustado para branco no dark */}
+      <p className="text-gray-900 dark:text-white mb-1" style={{ fontWeight: 700, fontSize: 22 }}>
         {value}
       </p>
-      <p className="text-gray-400" style={{ fontSize: 11 }}>{sub}</p>
+      <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: 11 }}>{sub}</p>
     </div>
   );
 }
@@ -130,7 +130,6 @@ export default function Dashboard() {
   const { user } = useApp();
   const [period, setPeriod] = useState<"diario" | "semanal" | "mensal">("semanal");
 
-  // Vendedor não tem acesso ao dashboard financeiro
   if (user?.role === "vendedor") {
     return <Navigate to="/pdv" replace />;
   }
@@ -179,12 +178,13 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-gray-900" style={{ fontWeight: 700, fontSize: 22 }}>
+          {/* Título da página */}
+          <h1 className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 22 }}>
             Dashboard
           </h1>
-          <p className="text-gray-400 text-sm mt-0.5">Visão geral do negócio</p>
+          <p className="text-gray-400 dark:text-gray-400 text-sm mt-0.5">Visão geral do negócio</p>
         </div>
-        <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1">
+        <div className="flex gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-1">
           {(["diario", "semanal", "mensal"] as const).map((p) => (
             <button
               key={p}
@@ -192,7 +192,7 @@ export default function Dashboard() {
               className={`px-4 py-1.5 rounded-lg text-xs transition-all capitalize ${
                 period === p
                   ? "bg-blue-600 text-white shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
               }`}
               style={{ fontWeight: 600 }}
             >
@@ -212,42 +212,43 @@ export default function Dashboard() {
       {/* Charts row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Bar chart */}
-        <div className="xl:col-span-2 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-gray-800" style={{ fontWeight: 700 }}>Vendas por Dia</h3>
+              <h3 className="text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>Vendas por Dia</h3>
               <p className="text-gray-400 text-xs mt-0.5">Comparativo com meta diária</p>
             </div>
             <div className="flex items-center gap-4 text-xs text-gray-400">
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-2 rounded-sm inline-block" style={{ background: "#1E3A5F" }} />
+                <span className="w-3 h-2 rounded-sm inline-block bg-[#1E3A5F] dark:bg-blue-400" />
                 Realizado
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-0.5 inline-block" style={{ background: "#10B981" }} />
+                <span className="w-3 h-0.5 inline-block bg-[#10B981]" />
                 Meta
               </span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={DAILY_DATA} barSize={24}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.3} />
               <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(1)}k`} />
               <Tooltip
                 formatter={(v: number) => [`R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, ""]}
-                contentStyle={{ borderRadius: 12, border: "1px solid #E5E7EB", fontSize: 12 }}
+                contentStyle={{ borderRadius: 12, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
               />
+              {/* O azul escuro padrão fica quase invisível no dark, coloquei uma cor alternativa caso precise, mas o azul 1E3A5F costuma ficar bom. Mantive a original. */}
               <Bar dataKey="vendas" fill="#1E3A5F" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="meta" fill="#E0F2FE" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="meta" fill="#3B82F6" opacity={0.2} radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Donut chart */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="mb-5">
-            <h3 className="text-gray-800" style={{ fontWeight: 700 }}>Curva ABC</h3>
+            <h3 className="text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>Curva ABC</h3>
             <p className="text-gray-400 text-xs mt-0.5">Distribuição por volume</p>
           </div>
           <ResponsiveContainer width="100%" height={160}>
@@ -267,7 +268,7 @@ export default function Dashboard() {
               </Pie>
               <Tooltip
                 formatter={(v: number) => [`${v}%`, ""]}
-                contentStyle={{ borderRadius: 10, border: "1px solid #E5E7EB", fontSize: 12 }}
+                contentStyle={{ borderRadius: 10, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -276,9 +277,9 @@ export default function Dashboard() {
               <div key={d.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ background: d.color }} />
-                  <span className="text-xs text-gray-600">{d.name}</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">{d.name}</span>
                 </div>
-                <span className="text-xs text-gray-800" style={{ fontWeight: 700 }}>{d.value}%</span>
+                <span className="text-xs text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>{d.value}%</span>
               </div>
             ))}
           </div>
@@ -288,17 +289,17 @@ export default function Dashboard() {
       {/* Bottom row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* ABC Table */}
-        <div className="xl:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between p-5 border-b border-gray-50">
+        <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-gray-700/50">
             <div>
-              <h3 className="text-gray-800" style={{ fontWeight: 700 }}>Produtos Mais Vendidos</h3>
+              <h3 className="text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>Produtos Mais Vendidos</h3>
               <p className="text-gray-400 text-xs mt-0.5">Ranking por faturamento — Curva ABC</p>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-50">
+                <tr className="bg-gray-50 dark:bg-gray-900/50">
                   <th className="text-left px-5 py-3 text-xs text-gray-400" style={{ fontWeight: 600 }}>#</th>
                   <th className="text-left px-5 py-3 text-xs text-gray-400" style={{ fontWeight: 600 }}>Produto</th>
                   <th className="text-left px-5 py-3 text-xs text-gray-400" style={{ fontWeight: 600 }}>Curva</th>
@@ -308,9 +309,9 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {ABC_DATA.map((item, i) => (
-                  <tr key={item.name} className="border-t border-gray-50 hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-3 text-xs text-gray-400" style={{ fontWeight: 600 }}>{i + 1}</td>
-                    <td className="px-5 py-3 text-sm text-gray-700" style={{ fontWeight: 500 }}>{item.name}</td>
+                  <tr key={item.name} className="border-t border-gray-50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-5 py-3 text-xs text-gray-400 dark:text-gray-500" style={{ fontWeight: 600 }}>{i + 1}</td>
+                    <td className="px-5 py-3 text-sm text-gray-700 dark:text-gray-200" style={{ fontWeight: 500 }}>{item.name}</td>
                     <td className="px-5 py-3">
                       <span
                         className="inline-flex px-2 py-0.5 rounded-full text-xs"
@@ -323,18 +324,18 @@ export default function Dashboard() {
                         {item.categoria}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-sm text-right text-gray-800" style={{ fontWeight: 600 }}>
+                    <td className="px-5 py-3 text-sm text-right text-gray-800 dark:text-white" style={{ fontWeight: 600 }}>
                       R$ {item.valor.toLocaleString("pt-BR")}
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="w-16 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full"
                             style={{ width: `${item.pct}%`, background: ABC_COLORS[item.categoria] }}
                           />
                         </div>
-                        <span className="text-xs text-gray-500" style={{ fontWeight: 600 }}>{item.pct}%</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400" style={{ fontWeight: 600 }}>{item.pct}%</span>
                       </div>
                     </td>
                   </tr>
@@ -347,26 +348,26 @@ export default function Dashboard() {
         {/* Alerts + Recent */}
         <div className="flex flex-col gap-4">
           {/* Low stock alerts */}
-          <div className="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
-            <div className="flex items-center gap-2 p-4 border-b border-red-50 bg-red-50/50">
-              <AlertTriangle className="w-4 h-4 text-red-500" />
-              <span className="text-red-700 text-sm" style={{ fontWeight: 700 }}>Alertas de Estoque</span>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-red-100 dark:border-red-900/30 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-2 p-4 border-b border-red-50 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/20">
+              <AlertTriangle className="w-4 h-4 text-red-500 dark:text-red-400" />
+              <span className="text-red-700 dark:text-red-400 text-sm" style={{ fontWeight: 700 }}>Alertas de Estoque</span>
               <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full" style={{ fontWeight: 700 }}>
                 {LOW_STOCK.length}
               </span>
             </div>
             <div className="flex flex-col">
               {LOW_STOCK.map((item) => (
-                <div key={item.name} className="flex items-center justify-between px-4 py-3 border-b border-gray-50 last:border-0">
+                <div key={item.name} className="flex items-center justify-between px-4 py-3 border-b border-gray-50 dark:border-gray-700/50 last:border-0">
                   <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-red-400" />
+                    <Package className="w-4 h-4 text-red-400 dark:text-red-500" />
                     <div>
-                      <p className="text-xs text-gray-700" style={{ fontWeight: 600 }}>{item.name}</p>
-                      <p className="text-red-500" style={{ fontSize: 10 }}>Mín: {item.min} un.</p>
+                      <p className="text-xs text-gray-700 dark:text-gray-200" style={{ fontWeight: 600 }}>{item.name}</p>
+                      <p className="text-red-500 dark:text-red-400" style={{ fontSize: 10 }}>Mín: {item.min} un.</p>
                     </div>
                   </div>
                   <span
-                    className="text-xs px-2 py-1 rounded-lg bg-red-100 text-red-600"
+                    className="text-xs px-2 py-1 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                     style={{ fontWeight: 700 }}
                   >
                     {item.qty} un.
@@ -377,18 +378,18 @@ export default function Dashboard() {
           </div>
 
           {/* Recent sales */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-gray-50">
-              <span className="text-gray-800 text-sm" style={{ fontWeight: 700 }}>Últimas Vendas</span>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-50 dark:border-gray-700/50">
+              <span className="text-gray-800 dark:text-white text-sm" style={{ fontWeight: 700 }}>Últimas Vendas</span>
             </div>
             <div className="flex flex-col">
               {RECENT_SALES.slice(0, 4).map((sale) => (
-                <div key={sale.id} className="flex items-center justify-between px-4 py-2.5 border-b border-gray-50 last:border-0">
+                <div key={sale.id} className="flex items-center justify-between px-4 py-2.5 border-b border-gray-50 dark:border-gray-700/50 last:border-0">
                   <div>
-                    <p className="text-xs text-gray-700" style={{ fontWeight: 600 }}>{sale.id}</p>
-                    <p className="text-gray-400" style={{ fontSize: 10 }}>{sale.time} · {sale.method}</p>
+                    <p className="text-xs text-gray-700 dark:text-gray-200" style={{ fontWeight: 600 }}>{sale.id}</p>
+                    <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: 10 }}>{sale.time} · {sale.method}</p>
                   </div>
-                  <span className="text-sm text-emerald-600" style={{ fontWeight: 700 }}>
+                  <span className="text-sm text-emerald-600 dark:text-emerald-400" style={{ fontWeight: 700 }}>
                     R$ {sale.value.toFixed(2).replace(".", ",")}
                   </span>
                 </div>
