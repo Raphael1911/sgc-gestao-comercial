@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate, Navigate } from "react-router";
 import { useApp } from "../context/AppContext";
+import { ThemeToggle } from "./ThemeToggle"; // Importando o nosso botão! (Ajuste o caminho se precisar: "../components/ThemeToggle")
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -8,7 +9,6 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Menu,
   X,
   Lock,
   Bell,
@@ -50,11 +50,13 @@ export default function Layout() {
   const lockedItems = NAV_ITEMS.filter((item) => item.locked && !item.roles.includes(user.role));
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
-      {/* Sidebar */}
+    // Adicionado suporte ao fundo escuro na div principal
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden transition-colors duration-300">
+      {/* Sidebar - Agora com suporte ao Dark Mode (repare no bg-[#1E3A5F] e dark:bg-gray-900) */}
       <aside
-        className={`flex flex-col transition-all duration-300 flex-shrink-0 ${sidebarOpen ? "w-64" : "w-16"}`}
-        style={{ background: "#1E3A5F" }}
+        className={`flex flex-col transition-all duration-300 flex-shrink-0 ${
+          sidebarOpen ? "w-64" : "w-16"
+        } bg-[#1E3A5F] dark:bg-gray-900 border-r border-transparent dark:border-gray-800`}
       >
         {/* Logo */}
         <div 
@@ -76,7 +78,7 @@ export default function Layout() {
               </div>
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // Evita que o clique no X também dispare o onClick da div pai
+                  e.stopPropagation();
                   setSidebarOpen(false);
                 }}
                 className="ml-auto text-blue-300 hover:text-white transition-colors"
@@ -138,7 +140,7 @@ export default function Layout() {
             </NavLink>
           ))}
 
-          {/* Locked items — only shown for vendedor */}
+          {/* Locked items */}
           {user.role === "vendedor" && lockedItems.length > 0 && (
             <>
               {sidebarOpen && (
@@ -182,45 +184,42 @@ export default function Layout() {
               <span className="text-sm" style={{ fontWeight: 500 }}>Sair</span>
             )}
           </button>
-
-          {sidebarOpen && (
-            <div className="flex items-center gap-3 px-2 py-0">
-              {/* <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-xs" style={{ fontWeight: 700 }}>{user.avatar}</span>
-              </div> */}
-              {/* <div className="overflow-hidden">
-                <p className="text-white text-xs truncate" style={{ fontWeight: 600 }}>{user.name}</p>
-                <p className="text-blue-400 truncate" style={{ fontSize: 10 }}>{user.email}</p>
-              </div> */}
-            </div>
-          )}
         </div>
       </aside>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top bar */}
-        <header className="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between flex-shrink-0 shadow-sm">
+        {/* Top bar - Adicionado bg-gray-900 e border-gray-800 para o dark mode */}
+        <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-3 flex items-center justify-between flex-shrink-0 shadow-sm transition-colors duration-300">
           <div>
-            <h2 className="text-gray-800 text-base" style={{ fontWeight: 700 }}>
+            {/* Títulos adaptáveis ao dark mode */}
+            <h2 className="text-gray-800 dark:text-white text-base" style={{ fontWeight: 700 }}>
               {user.role === "gestor" ? "Painel do Gestor" : "Painel do Vendedor"}
             </h2>
-            <p className="text-gray-400" style={{ fontSize: 12 }}>
+            <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: 12 }}>
               {new Date().toLocaleDateString("pt-BR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
             </p>
           </div>
+          
           <div className="flex items-center gap-3">
-            <button className="relative w-9 h-9 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition-colors border border-gray-200">
-              <Bell className="w-4 h-4 text-gray-500" />
+            
+            {/* AQUI ESTÁ O NOSSO BOTÃO DE TEMA */}
+            <ThemeToggle />
+
+            {/* Sino de notificação ajustado para dark mode */}
+            <button className="relative w-9 h-9 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors border border-gray-200 dark:border-gray-700">
+              <Bell className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
             </button>
-            <div className="flex items-center gap-2 pl-3 border-l border-gray-100">
+            
+            <div className="flex items-center gap-2 pl-3 border-l border-gray-100 dark:border-gray-800">
               <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
                 <span className="text-white text-xs" style={{ fontWeight: 700 }}>{user.avatar}</span>
               </div>
               <div className="hidden sm:block">
-                <p className="text-gray-800 text-sm" style={{ fontWeight: 600 }}>{user.name}</p>
-                <p className="text-gray-400" style={{ fontSize: 11, textTransform: "capitalize" }}>{user.role}</p>
+                {/* Nome de usuário adaptável ao dark mode */}
+                <p className="text-gray-800 dark:text-white text-sm" style={{ fontWeight: 600 }}>{user.name}</p>
+                <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: 11, textTransform: "capitalize" }}>{user.role}</p>
               </div>
             </div>
           </div>
