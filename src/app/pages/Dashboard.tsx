@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Navigate } from "react-router";
 import { useApp } from "../context/AppContext";
+import { useTheme } from "next-themes";
 import {
   BarChart,
   Bar,
@@ -44,12 +45,6 @@ const ABC_DATA = [
   { name: "Outros", valor: 2600, categoria: "C", pct: 17 },
 ];
 
-const DONUT_DATA = [
-  { name: "Curva A", value: 65, color: "#1E3A5F" },
-  { name: "Curva B", value: 18, color: "#3B82F6" },
-  { name: "Curva C", value: 17, color: "#93C5FD" },
-];
-
 const LOW_STOCK = [
   { name: "Coca-Cola 2L", qty: 4, min: 10 },
   { name: "Chips Lays 100g", qty: 2, min: 8 },
@@ -88,17 +83,15 @@ function KPICard({
   color: string;
 }) {
   return (
-    // Aplicando padrão de fundo e borda
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center"
+          className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={{ background: color + "18" }}
         >
-          <Icon className="w-5 h-5" style={{ color }} />
+          <Icon className="w-5 h-5 transition-colors" style={{ color }} />
         </div>
         <div
-          // Ajustando o fundo das badges de tendência no dark mode para não ficarem "brilhantes" demais
           className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
             trend === "up"
               ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400"
@@ -117,7 +110,6 @@ function KPICard({
       <p className="text-gray-500 dark:text-gray-400 text-xs mb-1" style={{ fontWeight: 500 }}>
         {title}
       </p>
-      {/* Texto principal ajustado para branco no dark */}
       <p className="text-gray-900 dark:text-white mb-1" style={{ fontWeight: 700, fontSize: 22 }}>
         {value}
       </p>
@@ -129,6 +121,27 @@ function KPICard({
 export default function Dashboard() {
   const { user } = useApp();
   const [period, setPeriod] = useState<"diario" | "semanal" | "mensal">("semanal");
+  
+  // Detecta o tema para trocar as cores dinamicamente
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
+  const chartColors = {
+    primaryBar: isDark ? "#60A5FA" : "#1E3A5F", 
+    secondaryBar: isDark ? "#1E3A8A" : "#93C5FD", // Mais vivo no tema claro!
+    grid: isDark ? "#374151" : "#F3F4F6",
+    text: isDark ? "#9CA3AF" : "#6B7280",
+    tooltipBg: isDark ? "#1F2937" : "#FFFFFF",
+    tooltipBorder: isDark ? "#374151" : "#E5E7EB",
+    tooltipText: isDark ? "#F9FAFB" : "#111827",
+    hoverCursor: isDark ? "#374151" : "#F8FAFC", // Suaviza aquele quadrado cinza forte
+  };
+
+  const DONUT_DATA = [
+    { name: "Curva A", value: 65, color: isDark ? "#60A5FA" : "#1E3A5F" },
+    { name: "Curva B", value: 18, color: "#3B82F6" }, 
+    { name: "Curva C", value: 17, color: "#93C5FD" }, 
+  ];
 
   if (user?.role === "vendedor") {
     return <Navigate to="/pdv" replace />;
@@ -151,7 +164,7 @@ export default function Dashboard() {
       icon: TrendingUp,
       trend: "up" as const,
       trendValue: "+12%",
-      color: "#1E3A5F",
+      color: chartColors.primaryBar, // Acompanha a cor principal do tema
     },
     {
       title: "Ticket Médio",
@@ -175,10 +188,8 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 flex flex-col gap-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          {/* Título da página */}
           <h1 className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 22 }}>
             Dashboard
           </h1>
@@ -202,16 +213,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         {kpis.map((kpi) => (
           <KPICard key={kpi.title} {...kpi} />
         ))}
       </div>
 
-      {/* Charts row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Bar chart */}
         <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="flex items-center justify-between mb-5">
             <div>
@@ -220,32 +228,38 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-4 text-xs text-gray-400">
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-2 rounded-sm inline-block bg-[#1E3A5F] dark:bg-blue-400" />
+                <span className="w-3 h-2 rounded-sm inline-block transition-colors" style={{ background: chartColors.primaryBar }} />
                 Realizado
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-0.5 inline-block bg-[#10B981]" />
+                <span className="w-3 h-0.5 inline-block transition-colors" style={{ background: chartColors.secondaryBar }} />
                 Meta
               </span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={DAILY_DATA} barSize={24}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.3} />
-              <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(1)}k`} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.grid} />
+              <XAxis dataKey="day" tick={{ fontSize: 12, fill: chartColors.text }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 12, fill: chartColors.text }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(1)}k`} />
               <Tooltip
+                cursor={{ fill: chartColors.hoverCursor }}
                 formatter={(v: number) => [`R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, ""]}
-                contentStyle={{ borderRadius: 12, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
+                contentStyle={{ 
+                  borderRadius: 12, 
+                  border: `1px solid ${chartColors.tooltipBorder}`, 
+                  fontSize: 12, 
+                  backgroundColor: chartColors.tooltipBg, 
+                  color: chartColors.tooltipText 
+                }}
+                itemStyle={{ color: chartColors.tooltipText }}
               />
-              {/* O azul escuro padrão fica quase invisível no dark, coloquei uma cor alternativa caso precise, mas o azul 1E3A5F costuma ficar bom. Mantive a original. */}
-              <Bar dataKey="vendas" fill="#1E3A5F" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="meta" fill="#3B82F6" opacity={0.2} radius={[6, 6, 0, 0]} />
+              <Bar dataKey="vendas" fill={chartColors.primaryBar} radius={[6, 6, 0, 0]} />
+              <Bar dataKey="meta" fill={chartColors.secondaryBar} radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Donut chart */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
           <div className="mb-5">
             <h3 className="text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>Curva ABC</h3>
@@ -261,6 +275,7 @@ export default function Dashboard() {
                 outerRadius={70}
                 paddingAngle={3}
                 dataKey="value"
+                stroke="none"
               >
                 {DONUT_DATA.map((entry, i) => (
                   <Cell key={i} fill={entry.color} />
@@ -268,7 +283,13 @@ export default function Dashboard() {
               </Pie>
               <Tooltip
                 formatter={(v: number) => [`${v}%`, ""]}
-                contentStyle={{ borderRadius: 10, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
+                contentStyle={{ 
+                  borderRadius: 10, 
+                  border: `1px solid ${chartColors.tooltipBorder}`, 
+                  fontSize: 12, 
+                  backgroundColor: chartColors.tooltipBg, 
+                  color: chartColors.tooltipText 
+                }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -276,7 +297,7 @@ export default function Dashboard() {
             {DONUT_DATA.map((d) => (
               <div key={d.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: d.color }} />
+                  <span className="w-2.5 h-2.5 rounded-full transition-colors" style={{ background: d.color }} />
                   <span className="text-xs text-gray-600 dark:text-gray-300">{d.name}</span>
                 </div>
                 <span className="text-xs text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>{d.value}%</span>
@@ -286,9 +307,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Bottom row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* ABC Table */}
         <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between p-5 border-b border-gray-50 dark:border-gray-700/50">
             <div>
@@ -345,9 +364,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Alerts + Recent */}
         <div className="flex flex-col gap-4">
-          {/* Low stock alerts */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-red-100 dark:border-red-900/30 shadow-sm overflow-hidden">
             <div className="flex items-center gap-2 p-4 border-b border-red-50 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/20">
               <AlertTriangle className="w-4 h-4 text-red-500 dark:text-red-400" />
@@ -377,7 +394,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Recent sales */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-gray-50 dark:border-gray-700/50">
               <span className="text-gray-800 dark:text-white text-sm" style={{ fontWeight: 700 }}>Últimas Vendas</span>

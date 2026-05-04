@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTheme } from "next-themes";
 import {
   BarChart,
   Bar,
@@ -12,12 +13,10 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from "recharts";
 import {
   TrendingUp,
   Download,
-  Calendar,
   ArrowUpRight,
   ArrowDownRight,
   DollarSign,
@@ -33,13 +32,6 @@ const MONTHLY_DATA = [
   { month: "Mai", receita: 38700, despesas: 20500, lucro: 18200 },
   { month: "Jun", receita: 44500, despesas: 23000, lucro: 21500 },
   { month: "Jul", receita: 48320, despesas: 25000, lucro: 23320 },
-];
-
-const PAYMENT_METHODS = [
-  { name: "PIX", value: 42, color: "#1E3A5F" },
-  { name: "Cartão Crédito", value: 28, color: "#3B82F6" },
-  { name: "Cartão Débito", value: 18, color: "#60A5FA" },
-  { name: "Dinheiro", value: 12, color: "#93C5FD" },
 ];
 
 const TOP_CATEGORIES = [
@@ -59,9 +51,31 @@ const DAILY_TREND = [
 export default function Reports() {
   const [period, setPeriod] = useState("mensal");
 
+  // Inteligência de Cores
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
+  const chartColors = {
+    receita: isDark ? "#60A5FA" : "#1E3A5F",
+    despesas: isDark ? "#F87171" : "#EF4444",
+    lucro: isDark ? "#34D399" : "#10B981",
+    grid: isDark ? "#374151" : "#F3F4F6",
+    text: isDark ? "#9CA3AF" : "#6B7280",
+    tooltipBg: isDark ? "#1F2937" : "#FFFFFF",
+    tooltipBorder: isDark ? "#374151" : "#E5E7EB",
+    tooltipText: isDark ? "#F9FAFB" : "#111827",
+    hoverCursor: isDark ? "#374151" : "#F8FAFC",
+  };
+
+  const PAYMENT_METHODS = [
+    { name: "PIX", value: 42, color: chartColors.receita },
+    { name: "Cartão Crédito", value: 28, color: "#3B82F6" },
+    { name: "Cartão Débito", value: 18, color: "#93C5FD" },
+    { name: "Dinheiro", value: 12, color: "#D1D5DB" },
+  ];
+
   return (
     <div className="p-6 flex flex-col gap-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 22 }}>
@@ -96,18 +110,17 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* KPI Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: "Receita Total", value: "R$ 48.320", trend: "+12%", icon: DollarSign, color: "#10B981" },
-          { label: "Lucro Bruto", value: "R$ 23.320", trend: "+8%", icon: TrendingUp, color: "#1E3A5F" },
+          { label: "Lucro Bruto", value: "R$ 23.320", trend: "+8%", icon: TrendingUp, color: chartColors.receita },
           { label: "Ticket Médio", value: "R$ 67,40", trend: "-3%", icon: ShoppingBag, color: "#3B82F6" },
           { label: "Produtos Vendidos", value: "716 un.", trend: "+15%", icon: Package, color: "#8B5CF6" },
         ].map((k) => (
           <div key={k.label} className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: k.color + "18" }}>
-                <k.icon className="w-4 h-4" style={{ color: k.color }} />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors" style={{ background: k.color + "18" }}>
+                <k.icon className="w-4 h-4 transition-colors" style={{ color: k.color }} />
               </div>
               <span
                 className={`text-xs flex items-center gap-0.5 px-2 py-1 rounded-full ${
@@ -127,9 +140,7 @@ export default function Reports() {
         ))}
       </div>
 
-      {/* Charts row 1 */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Revenue vs Cost */}
         <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
           <div className="flex items-center justify-between mb-5">
             <div>
@@ -138,12 +149,12 @@ export default function Reports() {
             </div>
             <div className="flex items-center gap-4 text-xs">
               {[
-                { label: "Receita", color: "#1E3A5F" },
-                { label: "Despesas", color: "#EF4444" },
-                { label: "Lucro", color: "#10B981" },
+                { label: "Receita", color: chartColors.receita },
+                { label: "Despesas", color: chartColors.despesas },
+                { label: "Lucro", color: chartColors.lucro },
               ].map((l) => (
                 <span key={l.label} className="flex items-center gap-1.5 text-gray-400 dark:text-gray-400">
-                  <span className="w-3 h-2 rounded-sm inline-block" style={{ background: l.color }} />
+                  <span className="w-3 h-2 rounded-sm inline-block transition-colors" style={{ background: l.color }} />
                   {l.label}
                 </span>
               ))}
@@ -151,21 +162,28 @@ export default function Reports() {
           </div>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={MONTHLY_DATA} barSize={14} barCategoryGap="30%">
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.2} />
-              <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(0)}k`} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.grid} />
+              <XAxis dataKey="month" tick={{ fontSize: 12, fill: chartColors.text }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 12, fill: chartColors.text }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(0)}k`} />
               <Tooltip
+                cursor={{ fill: chartColors.hoverCursor }}
                 formatter={(v: number) => [`R$ ${v.toLocaleString("pt-BR")}`, ""]}
-                contentStyle={{ borderRadius: 12, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
+                contentStyle={{ 
+                  borderRadius: 12, 
+                  border: `1px solid ${chartColors.tooltipBorder}`, 
+                  fontSize: 12, 
+                  backgroundColor: chartColors.tooltipBg, 
+                  color: chartColors.tooltipText 
+                }}
+                itemStyle={{ color: chartColors.tooltipText }}
               />
-              <Bar dataKey="receita" fill="#1E3A5F" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="despesas" fill="#FCA5A5" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="lucro" fill="#6EE7B7" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="receita" fill={chartColors.receita} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="despesas" fill={chartColors.despesas} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="lucro" fill={chartColors.lucro} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Payment methods donut */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
           <h3 className="text-gray-800 dark:text-white mb-1" style={{ fontWeight: 700 }}>Formas de Pagamento</h3>
           <p className="text-gray-400 dark:text-gray-500 text-xs mb-5">Distribuição no período</p>
@@ -179,19 +197,29 @@ export default function Reports() {
                 outerRadius={72}
                 paddingAngle={3}
                 dataKey="value"
+                stroke="none"
               >
                 {PAYMENT_METHODS.map((entry, i) => (
                   <Cell key={i} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(v: number) => [`${v}%`, ""]} contentStyle={{ borderRadius: 10, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }} />
+              <Tooltip 
+                formatter={(v: number) => [`${v}%`, ""]} 
+                contentStyle={{ 
+                  borderRadius: 10, 
+                  border: `1px solid ${chartColors.tooltipBorder}`, 
+                  fontSize: 12, 
+                  backgroundColor: chartColors.tooltipBg, 
+                  color: chartColors.tooltipText 
+                }} 
+              />
             </PieChart>
           </ResponsiveContainer>
           <div className="flex flex-col gap-2 mt-2">
             {PAYMENT_METHODS.map((m) => (
               <div key={m.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: m.color }} />
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0 transition-colors" style={{ background: m.color }} />
                   <span className="text-xs text-gray-600 dark:text-gray-300">{m.name}</span>
                 </div>
                 <span className="text-xs text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>{m.value}%</span>
@@ -201,34 +229,39 @@ export default function Reports() {
         </div>
       </div>
 
-      {/* Charts row 2 */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Daily trend */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
           <h3 className="text-gray-800 dark:text-white mb-1" style={{ fontWeight: 700 }}>Tendência Diária de Vendas</h3>
           <p className="text-gray-400 dark:text-gray-500 text-xs mb-5">Julho 2025</p>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={DAILY_TREND}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.2} />
-              <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: "#9CA3AF" }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(1)}k`} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.grid} />
+              <XAxis dataKey="day" tick={{ fontSize: 12, fill: chartColors.text }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 12, fill: chartColors.text }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$${(v/1000).toFixed(1)}k`} />
               <Tooltip
+                cursor={{ stroke: chartColors.grid, strokeWidth: 2 }}
                 formatter={(v: number) => [`R$ ${v.toLocaleString("pt-BR")}`, "Vendas"]}
-                contentStyle={{ borderRadius: 12, border: "none", fontSize: 12, backgroundColor: "#1F2937", color: "#F9FAFB" }}
+                contentStyle={{ 
+                  borderRadius: 12, 
+                  border: `1px solid ${chartColors.tooltipBorder}`, 
+                  fontSize: 12, 
+                  backgroundColor: chartColors.tooltipBg, 
+                  color: chartColors.tooltipText 
+                }}
+                itemStyle={{ color: chartColors.tooltipText }}
               />
               <Line
                 type="monotone"
                 dataKey="vendas"
-                stroke="#1E3A5F"
-                strokeWidth={2.5}
-                dot={{ r: 4, fill: "#1E3A5F", strokeWidth: 0 }}
+                stroke={chartColors.receita}
+                strokeWidth={3}
+                dot={{ r: 4, fill: chartColors.receita, strokeWidth: 0 }}
                 activeDot={{ r: 6 }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Category ranking */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
           <h3 className="text-gray-800 dark:text-white mb-1" style={{ fontWeight: 700 }}>Ranking por Categoria</h3>
           <p className="text-gray-400 dark:text-gray-500 text-xs mb-5">Faturamento por linha de produto</p>
@@ -236,8 +269,8 @@ export default function Reports() {
             {TOP_CATEGORIES.map((cat, i) => (
               <div key={cat.name} className="flex items-center gap-3">
                 <span
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-white flex-shrink-0"
-                  style={{ background: "#1E3A5F", fontSize: 9, fontWeight: 700 }}
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-white flex-shrink-0 transition-colors"
+                  style={{ background: chartColors.receita, fontSize: 9, fontWeight: 700 }}
                 >
                   {i + 1}
                 </span>
@@ -253,7 +286,7 @@ export default function Reports() {
                       className="h-full rounded-full transition-all"
                       style={{
                         width: `${cat.pct}%`,
-                        background: `linear-gradient(90deg, #1E3A5F, #3B82F6)`,
+                        background: `linear-gradient(90deg, ${chartColors.receita}, #3B82F6)`,
                       }}
                     />
                   </div>
