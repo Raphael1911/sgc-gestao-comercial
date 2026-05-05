@@ -13,8 +13,10 @@ import {
   Smartphone,
   ChevronRight,
   Package,
+  ArrowLeft, // Importado para o botão de voltar no mobile
 } from "lucide-react";
 
+// ... (interfaces e produtos mantidos)
 interface Product {
   id: string;
   code: string;
@@ -50,6 +52,7 @@ export default function POS() {
   const [showCancel, setShowCancel] = useState(false);
   const [payMethod, setPayMethod] = useState<PayMethod>("pix");
   const [cashAmount, setCashAmount] = useState("");
+  const [isCartOpen, setIsCartOpen] = useState(false); // NOVO: Controle do carrinho no mobile
   const searchRef = useRef<HTMLInputElement>(null);
 
   const filtered = search.length > 0
@@ -100,6 +103,7 @@ export default function POS() {
       setCart([]);
       setSearch("");
       setCashAmount("");
+      setIsCartOpen(false); // Fecha o carrinho após a venda no mobile
       searchRef.current?.focus();
     }, 2000);
   };
@@ -112,11 +116,10 @@ export default function POS() {
     : filtered.filter((p) => p.category === activeCategory);
 
   return (
-    // Fundo geral adaptado para o Dark Mode
-    <div className="flex h-full bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
+    <div className="flex h-full bg-slate-50 dark:bg-gray-950 transition-colors duration-300 relative">
       
-      {/* Left — Product selection */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-gray-100 dark:border-gray-800">
+      {/* Left — Product selection (Oculto no mobile se o carrinho estiver aberto) */}
+      <div className={`flex-1 flex-col min-w-0 border-r border-gray-100 dark:border-gray-800 ${isCartOpen ? "hidden md:flex" : "flex"}`}>
         
         {/* Search bar */}
         <div className="p-4 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 transition-colors">
@@ -129,13 +132,13 @@ export default function POS() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nome ou código de barras..."
+              placeholder="Buscar por nome ou código..."
               className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl pl-10 pr-10 py-3 text-sm text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             />
           </div>
 
           {/* Category filters */}
-          <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+          <div className="flex gap-2 mt-3 overflow-x-auto pb-1 hide-scrollbar">
             {["Todos", ...categories].map((cat) => (
               <button
                 key={cat}
@@ -201,12 +204,19 @@ export default function POS() {
         </div>
       </div>
 
-      {/* Right — Cart & Checkout */}
-      <div className="w-80 xl:w-96 flex flex-col bg-white dark:bg-gray-900 border-l border-transparent dark:border-gray-800 flex-shrink-0 transition-colors">
+      {/* Right — Cart & Checkout (Absoluto no mobile para cobrir a tela) */}
+      <div className={`w-full md:w-80 xl:w-96 flex-col bg-white dark:bg-gray-900 border-l border-transparent dark:border-gray-800 flex-shrink-0 transition-colors absolute md:relative inset-0 z-40 ${isCartOpen ? "flex" : "hidden md:flex"}`}>
         
         {/* Cart header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">
+            {/* Botão de voltar (Somente Mobile) */}
+            <button 
+              onClick={() => setIsCartOpen(false)} 
+              className="md:hidden mr-2 p-1 -ml-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
             <ShoppingCart className="w-5 h-5 text-blue-600 dark:text-blue-500" />
             <span className="text-gray-800 dark:text-white" style={{ fontWeight: 700 }}>Carrinho</span>
           </div>
@@ -275,7 +285,7 @@ export default function POS() {
         </div>
 
         {/* Checkout panel */}
-        <div className="border-t border-gray-100 dark:border-gray-800 p-5 flex flex-col gap-4">
+        <div className="border-t border-gray-100 dark:border-gray-800 p-5 flex flex-col gap-4 pb-20 md:pb-5">
           {/* Totals */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-sm text-gray-400 dark:text-gray-500">
@@ -369,28 +379,40 @@ export default function POS() {
         </div>
       </div>
 
+      {/* Floating Cart Button (Exclusivo Mobile) */}
+      {!isCartOpen && (
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="md:hidden fixed bottom-[88px] right-4 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg shadow-blue-900/20 flex items-center justify-center z-30 transition-transform active:scale-95"
+        >
+          <ShoppingCart className="w-6 h-6" />
+          {cart.length > 0 && (
+            <span className="absolute top-0 right-0 -mt-1 -mr-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-slate-50 dark:border-gray-950">
+              {cart.reduce((acc, item) => acc + item.qty, 0)}
+            </span>
+          )}
+        </button>
+      )}
+
       {/* Success overlay */}
       {showSuccess && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-10 flex flex-col items-center gap-4 shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-sm flex flex-col items-center gap-4 shadow-2xl text-center">
             <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
               <CheckCircle className="w-10 h-10 text-emerald-500 dark:text-emerald-400" />
             </div>
             <h3 className="text-gray-800 dark:text-white" style={{ fontWeight: 700, fontSize: 22 }}>Venda Finalizada!</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               Total: <strong>R$ {finalTotal.toFixed(2).replace(".", ",")}</strong> — {payMethod === "dinheiro" ? "Dinheiro" : payMethod === "cartao" ? "Cartão" : "PIX"}
             </p>
-            <div
-              className="w-2 h-2 rounded-full bg-emerald-400 animate-bounce mt-2"
-            />
           </div>
         </div>
       )}
 
       {/* Cancel modal */}
       {showCancel && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-sm w-full shadow-2xl">
             <div className="w-14 h-14 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-5 mx-auto">
               <X className="w-6 h-6 text-red-500 dark:text-red-400" />
             </div>
@@ -398,7 +420,7 @@ export default function POS() {
               Cancelar Venda?
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm text-center mb-6">
-              Todos os {cart.length} itens serão removidos do carrinho. Essa ação não pode ser desfeita.
+              Todos os {cart.length} itens serão removidos do carrinho.
             </p>
             <div className="flex gap-3">
               <button
@@ -412,6 +434,7 @@ export default function POS() {
                 onClick={() => {
                   setCart([]);
                   setShowCancel(false);
+                  setIsCartOpen(false); // Fecha o carrinho se cancelar
                 }}
                 className="flex-1 py-3 rounded-xl bg-red-500 text-white text-sm hover:bg-red-600 transition-colors"
                 style={{ fontWeight: 600 }}
