@@ -197,18 +197,6 @@ export default function Layout() {
               <span className="text-sm" style={{ fontWeight: 500 }}>Sair</span>
             )}
           </button>
-
-          {sidebarOpen && (
-            <div className="flex items-center gap-3 px-3 py-2">
-              <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center flex-shrink-0">
-                <span className="text-white text-xs" style={{ fontWeight: 700 }}>{user.avatar}</span>
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-white text-xs truncate" style={{ fontWeight: 600 }}>{user.name}</p>
-                <p className="text-blue-400 truncate" style={{ fontSize: 10 }}>{user.email}</p>
-              </div>
-            </div>
-          )}
         </div>
       </aside>
 
