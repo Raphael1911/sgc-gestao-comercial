@@ -76,34 +76,24 @@ export default function Layout() {
           sidebarOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 w-64 md:w-16"
         } bg-[#1E3A5F] dark:bg-gray-900 border-r border-transparent dark:border-gray-800`}
       >
-        <div 
-          className={`flex items-center border-b border-white/10 py-5 transition-all ${
-            sidebarOpen ? "px-4 gap-3" : "justify-center cursor-pointer hover:bg-white/5"
-          }`}
-          onClick={() => !sidebarOpen && setSidebarOpen(true)}
-          title={!sidebarOpen ? "Expandir menu" : ""}
-        >
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
           <div className="w-9 h-9 bg-blue-400/30 rounded-xl flex items-center justify-center flex-shrink-0">
             <Store className="w-5 h-5 text-blue-200" />
           </div>
           
           {sidebarOpen && (
-            <>
-              <div className="overflow-hidden">
-                <p className="text-white text-sm" style={{ fontWeight: 700 }}>SGC</p>
-                <p className="text-blue-300" style={{ fontSize: 10 }}>Gestão Comercial</p>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSidebarOpen(false);
-                }}
-                className="ml-auto text-blue-300 hover:text-white transition-colors md:hidden"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </>
+            <div className="overflow-hidden">
+              <p className="text-white text-sm" style={{ fontWeight: 700 }}>SGC</p>
+              <p className="text-blue-300" style={{ fontSize: 10 }}>Gestão Comercial</p>
+            </div>
           )}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="ml-auto text-blue-300 hover:text-white transition-colors"
+          >
+            {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
         </div>
 
         {sidebarOpen && (
@@ -207,6 +197,18 @@ export default function Layout() {
               <span className="text-sm" style={{ fontWeight: 500 }}>Sair</span>
             )}
           </button>
+
+          {sidebarOpen && (
+            <div className="flex items-center gap-3 px-3 py-2">
+              <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-xs" style={{ fontWeight: 700 }}>{user.avatar}</span>
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-white text-xs truncate" style={{ fontWeight: 600 }}>{user.name}</p>
+                <p className="text-blue-400 truncate" style={{ fontSize: 10 }}>{user.email}</p>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
 

@@ -177,6 +177,21 @@ return (
             >
               {loading ? "Entrando..." : "Entrar no Sistema"}
             </button>
+     
+{error && (
+              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-xl">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl text-white text-sm transition-all disabled:opacity-70 mt-2"
+              style={{ background: loading ? "#93C5FD" : "linear-gradient(135deg, #1E3A5F, #2B6CB0)", fontWeight: 600 }}
+            >
+              {loading ? "Entrando..." : "Entrar no Sistema"}
+            </button>
           </form>
         </div>
       </div>
