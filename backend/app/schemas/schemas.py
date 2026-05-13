@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from app.models import models
+from app.core.database import engine, get_db
 
 # O que o frontend precisa enviar para criar um produto
 class ProdutoCreate(BaseModel):
