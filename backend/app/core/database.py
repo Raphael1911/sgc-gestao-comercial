@@ -3,13 +3,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
-# Carrega as variáveis do arquivo .env
+# Carrega o arquivo .env
 load_dotenv()
 
-# Pega a URL do banco
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://root:senha@localhost:3306/sgc_db")
+# Busca a URL, se não encontrar, usa um fallback seguro
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Cria o motor de conexão com o MySQL
+if not SQLALCHEMY_DATABASE_URL:
+    raise ValueError("A variável DATABASE_URL não foi encontrada no arquivo .env")
+
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 # Cria a fábrica de sessões (usada nas rotas para conversar com o banco)
