@@ -1,12 +1,13 @@
 # 🛒 SGC - Sistema de Gestão Comercial
 
-![Status](https://img.shields.io/badge/Status-Concluído-success)
+![Status](https://img.shields.io/badge/Status-Em_Desenvolvimento-warning)
 ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=flat&logo=docker&logoColor=white)
 
 O **SGC (Sistema de Gestão Comercial)** é uma aplicação web moderna, responsiva e acessível desenvolvida para facilitar o controle de vendas, estoque e análises financeiras de pequenos e médios empreendimentos.
 
@@ -34,80 +35,67 @@ A aplicação utiliza a arquitetura de **Monorepo**, dividindo as responsabilida
 * **Gráficos:** Recharts
 * **Ícones:** Lucide React
 
-### 🟢 Backend & Banco de Dados
+### 🟢 Backend & Infraestrutura
 * **Linguagem:** Python 3.10+
 * **Framework API:** FastAPI (Assíncrono, documentação interativa via Swagger)
-* **Banco de Dados:** MySQL (Relacional)
-* **ORM:** SQLAlchemy
-* **Validação de Dados:** Pydantic
-* **Servidor ASGI:** Uvicorn
+* **Banco de Dados:** MySQL 8.0 (Relacional)
+* **ORM & Validação:** SQLAlchemy + Pydantic
+* **Segurança (AppSec):** SlowAPI (Rate Limiting contra Força Bruta) e CORS Estrito
+* **Infraestrutura (IaC):** Docker & Docker Compose (Ambiente isolado e padronizado)
 
 ## 🚀 Como Executar o Projeto
 
-Certifique-se de ter o [Node.js](https://nodejs.org/), o [Python 3.10+](https://www.python.org/) e o [MySQL](https://www.mysql.com/) instalados em sua máquina.
+Certifique-se de ter o [Node.js](https://nodejs.org/) e o [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalados em sua máquina.
 
 1. Clone este repositório:
-```bash
-git clone [https://github.com/seu-usuario/sgc-gestao-comercial.git](https://github.com/seu-usuario/sgc-gestao-comercial.git)
-cd sgc-gestao-comercial
-```
+    ```bash
+    git clone [https://github.com/seu-usuario/sgc-gestao-comercial.git](https://github.com/seu-usuario/sgc-gestao-comercial.git)
+    cd sgc-gestao-comercial
+    ```
+
+---
+
+### ⚙️ Executando o Backend (Recomendado via Docker)
+
+Nós utilizamos o Docker para garantir que o banco de dados e a API rodem perfeitamente em qualquer sistema operacional, sem necessidade de instalar o MySQL manualmente.
+
+1. Acesse a pasta do backend:
+    ```bash
+    cd backend
+    ```
+
+2. Configure as Variáveis de Ambiente:
+    Faça uma cópia do arquivo `.env.example` e renomeie para `.env`.
+    ```bash
+    cp .env.example .env
+    ```
+
+3. Suba a infraestrutura completa com um único comando:
+    ```bash
+    docker compose up -d --build
+    ```
+
+A API estará rodando blindada e a documentação interativa ficará disponível em `http://localhost:8000/docs`.
+
+> **Nota para execução manual (Sem Docker):** Caso queira rodar o servidor localmente no seu SO, ative sua `venv`, instale o `requirements.txt`, configure o `.env` apontando para o seu MySQL local (`localhost`) e rode: `uvicorn app.main:app --reload`.
 
 ---
 
 ### 🎨 Executando o Frontend
 
-1. Acesse a pasta do frontend:
-```bash
-cd frontend
-```
-2. Instale as dependências:
-```bash
-npm install
-```
-3. Inicie o servidor de desenvolvimento:
-```bash
-npm run dev
-```
+1. Abra um novo terminal e acesse a pasta do frontend:
+    ```bash
+    cd frontend
+    ```
+2. Configure as Variáveis de Ambiente:
+    Crie um arquivo `.env` baseado no `.env.example` apontando para `http://localhost:8000`.
+
+3. Instale as dependências e inicie o servidor:
+    ```bash
+    npm install
+    npm run dev
+    ```
 O sistema estará disponível em `http://localhost:5173`.
-
----
-
-### ⚙️ Executando o Backend
-
-1. Volte para a raiz e acesse a pasta do backend:
-```bash
-cd ../backend
-```
-
-2. Crie e ative o ambiente virtual:
-   - **No Windows:**
-     ```bash
-     python -m venv venv
-     venv\Scripts\activate
-     ```
-   - **No Linux / Mac:**
-     ```bash
-     python3 -m venv venv
-     source venv/bin/activate
-     ```
-
-3. Instale as dependências do Python:
-```bash
-pip install -r requirements.txt
-```
-
-4. Configure o Banco de Dados:
-Crie um arquivo `.env` dentro da pasta `backend` com as suas credenciais locais do MySQL:
-```env
-DATABASE_URL=mysql+pymysql://root:suasenha@localhost:3306/sgc_db
-```
-*(Lembre-se de criar o banco `sgc_db` no seu MySQL antes de rodar o servidor).*
-
-5. Inicie a API:
-```bash
-uvicorn main:app --reload
-```
-A documentação automática interativa estará disponível em `http://127.0.0.1:8000/docs`.
 
 ---
 
