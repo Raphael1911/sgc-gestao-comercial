@@ -45,7 +45,7 @@ A aplicação utiliza a arquitetura de **Monorepo**, dividindo as responsabilida
 
 ## 🚀 Como Executar o Projeto
 
-Certifique-se de ter o [Node.js](https://nodejs.org/) e o [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalados em sua máquina.
+Certifique-se de ter o [Node.js](https://nodejs.org/) e o [Python 3.10+](https://www.python.org/) instalados em sua máquina. Para ambiente isolado, Docker é recomendado.
 
 1. Clone este repositório:
     ```bash
@@ -55,9 +55,10 @@ Certifique-se de ter o [Node.js](https://nodejs.org/) e o [Docker Desktop](https
 
 ---
 
-### ⚙️ Executando o Backend (Recomendado via Docker)
+### ⚙️ Executando o Backend
 
-Nós utilizamos o Docker para garantir que o banco de dados e a API rodem perfeitamente em qualquer sistema operacional, sem necessidade de instalar o MySQL manualmente.
+#### Via Docker (Recomendado)
+Nós utilizamos o Docker para garantir que o banco de dados e a API rodem perfeitamente em qualquer sistema operacional.
 
 1. Acesse a pasta do backend:
     ```bash
@@ -65,19 +66,57 @@ Nós utilizamos o Docker para garantir que o banco de dados e a API rodem perfei
     ```
 
 2. Configure as Variáveis de Ambiente:
-    Faça uma cópia do arquivo `.env.example` e renomeie para `.env`.
     ```bash
     cp .env.example .env
     ```
+    Edite o `.env` com suas credenciais (para Docker, use `db` como host; para local, use `localhost`).
 
-3. Suba a infraestrutura completa com um único comando:
+3. Suba a infraestrutura:
     ```bash
     docker compose up -d --build
     ```
+    
+A API estará disponível em `http://localhost:8000` e a documentação interativa em `http://localhost:8000/docs`.
 
-A API estará rodando blindada e a documentação interativa ficará disponível em `http://localhost:8000/docs`.
+#### Execução Local (Sem Docker)
+Se preferir rodar localmente em seu SO:
 
-> **Nota para execução manual (Sem Docker):** Caso queira rodar o servidor localmente no seu SO, ative sua `venv`, instale o `requirements.txt`, configure o `.env` apontando para o seu MySQL local (`localhost`) e rode: `uvicorn app.main:app --reload`.
+1. Crie o banco de dados MySQL local com o script:
+    ```bash
+    # Execute o arquivo database_setup.sql no MySQL Workbench
+    # Ou via linha de comando:
+    mysql -u root -p < backend/database_setup.sql
+    ```
+
+2. Configure o ambiente Python:
+    ```bash
+    cd backend
+    python -m venv venv
+    
+    # Windows
+    .\venv\Scripts\Activate.ps1
+    # ou Mac/Linux
+    source venv/bin/activate
+    
+    pip install -r requirements.txt
+    ```
+
+3. Configure o `.env`:
+    ```bash
+    cp .env.example .env
+    # Edite .env com seu usuário e senha MySQL local
+    # DATABASE_URL=mysql+pymysql://root:suasenha@localhost:3306/sgc
+    ```
+
+4. Inicie o servidor:
+    ```bash
+    uvicorn app.main:app --reload --port 8000
+    ```
+
+#### Testando a Conexão
+Após o backend subir, acesse:
+- `http://127.0.0.1:8000/` — health check
+- `http://127.0.0.1:8000/productos` — valida conexão com MySQL
 
 ---
 
@@ -87,15 +126,41 @@ A API estará rodando blindada e a documentação interativa ficará disponível
     ```bash
     cd frontend
     ```
+
 2. Configure as Variáveis de Ambiente:
-    Crie um arquivo `.env` baseado no `.env.example` apontando para `http://localhost:8000`.
+    ```bash
+    cp .env.example .env
+    # Aponte para http://localhost:8000
+    ```
 
 3. Instale as dependências e inicie o servidor:
     ```bash
     npm install
     npm run dev
     ```
+    
 O sistema estará disponível em `http://localhost:5173`.
+
+---
+
+## 📊 Estado Atual do Backend
+
+### Banco de Dados
+- ✅ MySQL local integrado e testado
+- ✅ Tabela `produtos` pronta
+- ✅ Script `database_setup.sql` para inicializar o banco
+- ✅ Arquivo `.env.example` e `.env` configurados
+
+### API & Rotas
+- ✅ `/` — health check (retorna status ok)
+- ✅ `/produtos` — lista produtos (conecta ao MySQL)
+- ✅ Documentação automática em `/docs` (Swagger)
+
+### Configurações
+- ✅ SQLAlchemy + Pydantic para modelos e validação
+- ✅ CORS configurado para o frontend em `localhost:5173`
+- ✅ Rate limiting (SlowAPI) contra força bruta
+- ✅ Criação automática de tabelas ao iniciar a aplicação
 
 ---
 

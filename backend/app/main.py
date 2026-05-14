@@ -9,6 +9,9 @@ from app.models import models
 from app.schemas import schemas
 from app.core.database import engine, get_db
 
+# Cria as tabelas no banco se ainda não existirem
+models.Base.metadata.create_all(bind=engine)
+
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(title="SGC API", version="1.0.0")

@@ -1,7 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float
-from app.models import models
-from app.schemas import schemas
-from app.core.database import engine, get_db
+from app.core.database import Base
 
 # Tabela de Produtos no MySQL
 class Produto(Base):
