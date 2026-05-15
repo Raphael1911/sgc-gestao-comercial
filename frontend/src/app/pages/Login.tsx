@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { useApp, UserRole } from "../context/AppContext";
-import { ThemeToggle } from "../components/ThemeToggle"; // 1. Importando o botão
+import { useApp } from "../context/AppContext"; // Removemos o UserRole
+import { ThemeToggle } from "../components/ThemeToggle";
 import {
   ShoppingCart,
   Eye,
@@ -13,9 +13,11 @@ import {
 export default function Login() {
   const { login } = useApp();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("gestor@sgc.com");
-  const [password, setPassword] = useState("••••••••");
-  const [role, setRole] = useState<UserRole>("gestor");
+  
+  // Limpamos os valores padrão para forçar o usuário a digitar
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,22 +26,24 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    await new Promise((r) => setTimeout(r, 700));
-    const ok = login(email, password, role);
+    
+    // Agora o login bate na API de verdade!
+    const ok = await login(email, password);
+    
     setLoading(false);
+    
     if (ok) {
-      navigate(role === "gestor" ? "/dashboard" : "/pdv");
+      // Mandamos para a raiz. Se for Vendedor, o próprio Dashboard redireciona para o /pdv
+      navigate("/");
     } else {
-      setError("Credenciais inválidas. Tente novamente.");
+      setError("E-mail ou senha incorretos. Tente novamente.");
     }
   };
 
-return (
-    // 1. Removemos o 'style' e adicionamos o gradiente via Tailwind com suporte ao dark mode (dark:from-gray-900...)
+  return (
     <div className="min-h-screen flex relative bg-gradient-to-br from-[#1E3A5F] via-[#2D5282] to-[#2B6CB0] dark:from-gray-900 dark:via-slate-900 dark:to-black transition-colors duration-500">
       
-
-      {/* Left panel (Daqui para baixo continua exatamente igual ao seu código atual) */}
+      {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-center items-start px-16 w-1/2 text-white">
         <div className="flex items-center gap-3 mb-10">
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -75,10 +79,8 @@ return (
       {/* Right panel - Form */}
       <div className="flex-1 flex items-center justify-center p-6">
         
-        {/* Adicionamos 'relative' no final desta linha para "prender" o botão aqui dentro */}
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-10 transition-colors relative">
           
-          {/* O Botão agora vive aqui, no canto superior direito apenas do card! */}
           <div className="absolute top-6 right-6 z-10">
             <ThemeToggle />
           </div>
@@ -88,37 +90,11 @@ return (
             <span className="text-xl text-blue-900 dark:text-white" style={{ fontWeight: 700 }}>SGC</span>
           </div>
           
-          {/* Textos com suporte a dark mode (Restante do código segue igual) */}
           <h2 className="text-gray-900 dark:text-white mb-1" style={{ fontWeight: 700, fontSize: 26 }}>Bem-vindo de volta</h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">Faça login para acessar o sistema</p>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
-            {/* Role selector */}
-            <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5" style={{ fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                Perfil de Acesso
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {(["gestor", "vendedor"] as UserRole[]).map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => {
-                      setRole(r);
-                      setEmail(r === "gestor" ? "gestor@sgc.com" : "vendedor@sgc.com");
-                    }}
-                    className={`py-2.5 rounded-xl text-sm transition-all border-2 ${
-                      role === r
-                        ? "border-blue-600 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
-                        : "border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600"
-                    }`}
-                    style={{ fontWeight: 600 }}
-                  >
-                    {r === "gestor" ? " Gestor" : " Vendedor"}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* O seletor de Perfil (Gestor/Vendedor) foi removido daqui! */}
 
             {/* Email */}
             <div>
@@ -181,7 +157,7 @@ return (
               className="w-full py-3.5 rounded-xl text-white text-sm transition-all disabled:opacity-70 mt-2"
               style={{ background: loading ? "#93C5FD" : "linear-gradient(135deg, #1E3A5F, #2B6CB0)", fontWeight: 600 }}
             >
-              {loading ? "Entrando..." : "Entrar no Sistema"}
+              {loading ? "Autenticando..." : "Entrar no Sistema"}
             </button>
           </form>
         </div>

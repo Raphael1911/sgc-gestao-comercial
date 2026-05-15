@@ -1,6 +1,7 @@
 import React from "react";
 import { createBrowserRouter, Navigate } from "react-router";
-import Layout from "./components/Layout";
+import Layout from "./components/Layout"; // Ajuste o caminho se seu Layout não estiver em /ui
+import ProtectedRoute from "./components/ProtectedRoute"; // <-- Importamos o guarda
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -29,11 +30,31 @@ export const router = createBrowserRouter([
     Component: Layout,
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: "dashboard", Component: Dashboard },
-      { path: "pdv", Component: POS },
-      { path: "estoque", Component: Inventory },
-      { path: "relatorios", Component: Reports },
-      { path: "configuracoes", Component: Settings },
+      
+      // Rotas exclusivas de Gestor
+      { 
+        path: "dashboard", 
+        element: <ProtectedRoute allowedRoles={["gestor"]}><Dashboard /></ProtectedRoute> 
+      },
+      { 
+        path: "relatorios", 
+        element: <ProtectedRoute allowedRoles={["gestor"]}><Reports /></ProtectedRoute> 
+      },
+      { 
+        path: "configuracoes", 
+        element: <ProtectedRoute allowedRoles={["gestor"]}><Settings /></ProtectedRoute> 
+      },
+
+      // Rotas compartilhadas (Gestor e Vendedor)
+      { 
+        path: "pdv", 
+        element: <ProtectedRoute allowedRoles={["gestor", "vendedor"]}><POS /></ProtectedRoute> 
+      },
+      { 
+        path: "estoque", 
+        element: <ProtectedRoute allowedRoles={["gestor", "vendedor"]}><Inventory /></ProtectedRoute> 
+      },
+      
       { path: "*", Component: NotFound },
     ],
   },

@@ -1,35 +1,38 @@
-const API_URL = 'http://localhost:3000/api';
+// frontend/src/services/api.ts
+import axios from "axios";
+
+// Configura a base da URL apontando para o FastAPI
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
+});
+
+// INTERCEPTADOR: Injeta o Token JWT antes de qualquer requisição sair
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("@sgc_token");
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// --- FUNÇÕES DO ESTOQUE (Adaptadas para o Axios e para o FastAPI) ---
 
 export const buscarItens = async () => {
-  const resposta = await fetch(`${API_URL}/itens`);
-  if (!resposta.ok) throw new Error('Erro ao buscar itens');
-  return resposta.json();
+  const resposta = await api.get('/produtos');
+  return resposta.data;
 };
 
 export const criarItem = async (item: any) => {
-  const resposta = await fetch(`${API_URL}/itens`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(item),
-  });
-  if (!resposta.ok) throw new Error('Erro ao criar item');
-  return resposta.json();
+  const resposta = await api.post('/produtos', item);
+  return resposta.data;
 };
 
 export const atualizarItem = async (id: string, item: any) => {
-  const resposta = await fetch(`${API_URL}/itens/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(item),
-  });
-  if (!resposta.ok) throw new Error('Erro ao atualizar item');
-  return resposta.json();
+  const resposta = await api.put(`/produtos/${id}`, item);
+  return resposta.data;
 };
 
 export const deletarItem = async (id: string) => {
-  const resposta = await fetch(`${API_URL}/itens/${id}`, {
-    method: 'DELETE',
-  });
-  if (!resposta.ok) throw new Error('Erro ao deletar item');
-  return resposta.json();
+  const resposta = await api.delete(`/produtos/${id}`);
+  return resposta.data;
 };

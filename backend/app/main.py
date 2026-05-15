@@ -11,7 +11,7 @@ from app.schemas import schemas
 from app.core.database import engine, get_db
 
 # Importando o roteador de autenticação e o "porteiro" (dependência de segurança)
-from app.routers import auth
+from app.routers import auth, usuarios
 from app.core.dependencies import get_current_user
 
 # Cria as tabelas no banco se ainda não existirem
@@ -42,6 +42,7 @@ app.add_middleware(
 # REGISTRO DE ROTAS
 # ---------------------------------------------------
 app.include_router(auth.router)
+app.include_router(usuarios.router)
 
 
 # ---------------------------------------------------
