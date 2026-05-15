@@ -21,3 +21,13 @@ CREATE TABLE IF NOT EXISTS produtos (
 );
 
 -- Nota: DECIMAL(10,2) é melhor para preços (evita problemas de precisão com FLOAT)
+
+
+-- 4. Criar tabela de usuarios
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    role ENUM('Gestor', 'Vendedor') NOT NULL
+);
