@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: sgc_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: suasenha
+      MYSQL_DATABASE: sgc_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  api:
+    build: .
+    container_name: sgc_api
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      
+volumes:
+  db_data:
