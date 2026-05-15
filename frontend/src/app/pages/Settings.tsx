@@ -11,9 +11,10 @@ import {
   ToggleRight,
   ChevronRight,
   X,
-  Check, // Importados para o Modal
+  Check,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import { criarUsuarioAPI } from "../../services/user_api"; // <-- Importando a conexão com a API
 
 export default function Settings() {
   const { user } = useApp();
@@ -21,10 +22,12 @@ export default function Settings() {
   const [name, setName] = useState(user?.name || "");
   const [saved, setSaved] = useState(false);
 
-  // Estados para o Modal de Convite
+  // Estados para o Modal de Convite (Ajustado para os campos do backend: nome, email, senha, role)
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [inviteData, setInviteData] = useState({ name: "", email: "", password: "", role: "Vendedor" });
+  const [inviteData, setInviteData] = useState({ nome: "", email: "", senha: "", role: "Vendedor" });
   const [inviting, setInviting] = useState(false);
+  const [inviteError, setInviteError] = useState("");
+  const [inviteSuccess, setInviteSuccess] = useState("");
 
   const [notifications, setNotifications] = useState({
     stockAlert: true,
@@ -38,14 +41,35 @@ export default function Settings() {
     setTimeout(() => setSaved(false), 2000);
   };
 
+  // Função REAL conectada com o backend
   const handleInvite = async () => {
     setInviting(true);
-    // Simulação de chamada de API
-    await new Promise((r) => setTimeout(r, 1000));
-    setInviting(false);
-    setShowInviteModal(false);
-    setInviteData({ name: "", email: "", password: "", role: "Vendedor" }); // Limpa o form
-    // Aqui você faria o recarregamento da lista de usuários real do backend
+    setInviteError("");
+    setInviteSuccess("");
+    
+    try {
+      // Chama a rota POST /usuarios do FastAPI
+      await criarUsuarioAPI(inviteData);
+      
+      setInviteSuccess("Usuário cadastrado com sucesso!");
+      
+      // Espera um tempinho para o gestor ler a mensagem de sucesso e fecha o modal
+      setTimeout(() => {
+        setShowInviteModal(false);
+        setInviteData({ nome: "", email: "", senha: "", role: "Vendedor" }); 
+        setInviteSuccess("");
+      }, 1500);
+
+      // (Futuro) Aqui você chamaria uma função para recarregar o USERS_LIST real do banco
+      
+    } catch (error: any) {
+      // Se o backend barrar (ex: email já existe), mostramos o erro na tela
+      setInviteError(
+        error.response?.data?.detail || "Erro ao cadastrar usuário. Verifique os dados."
+      );
+    } finally {
+      setInviting(false);
+    }
   };
 
   const tabs = [
@@ -70,10 +94,9 @@ export default function Settings() {
         <p className="text-gray-400 dark:text-gray-400 text-sm mt-0.5">Gerencie preferências do sistema</p>
       </div>
 
-      {/* Alterado para flex-col no mobile e flex-row no desktop */}
       <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
         
-        {/* Sidebar tabs - Agora com scroll horizontal no mobile */}
+        {/* Sidebar tabs */}
         <div className="w-full lg:w-56 flex-shrink-0">
           <nav className="flex lg:flex-col overflow-x-auto hide-scrollbar bg-white dark:bg-gray-800 rounded-xl lg:rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm transition-colors">
             {tabs.map((tab) => (
@@ -101,7 +124,6 @@ export default function Settings() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 sm:p-6 transition-colors">
               <h2 className="text-gray-800 dark:text-white mb-6" style={{ fontWeight: 700, fontSize: 16 }}>Dados do Perfil</h2>
               
-              {/* Ajustado flex-col para o Avatar no mobile */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 mb-8 pb-6 border-b border-gray-50 dark:border-gray-700/50 text-center sm:text-left">
                 <div className="w-20 h-20 rounded-2xl bg-blue-600 flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-2xl" style={{ fontWeight: 700 }}>{user?.avatar}</span>
@@ -115,7 +137,6 @@ export default function Settings() {
                 </div>
               </div>
 
-              {/* Ajustado grid-cols-1 no mobile, grid-cols-2 no desktop */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div>
                   <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1.5" style={{ fontWeight: 600 }}>Nome Completo</label>
@@ -201,14 +222,13 @@ export default function Settings() {
                   <h2 className="text-gray-800 dark:text-white" style={{ fontWeight: 700, fontSize: 16 }}>Usuários do Sistema</h2>
                   <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">Gerencie os acessos da equipe</p>
                 </div>
-                {/* AQUI: Botão de convidar modificado para abrir o modal */}
                 <button
                   onClick={() => setShowInviteModal(true)}
                   className="flex items-center justify-center w-full sm:w-auto gap-2 px-4 py-2.5 rounded-xl text-white text-sm hover:opacity-90 transition-all"
                   style={{ background: "linear-gradient(135deg, #1E3A5F, #2B6CB0)", fontWeight: 600 }}
                 >
                   <Users className="w-4 h-4" />
-                  Convidar Vendedor
+                  Cadastrar Usuário
                 </button>
               </div>
               <div className="flex flex-col divide-y divide-gray-50 dark:divide-gray-700/50">
@@ -222,7 +242,6 @@ export default function Settings() {
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{u.email}</p>
                     </div>
                     
-                    {/* Oculto em telas super pequenas para não quebrar a UI */}
                     <div className="hidden sm:flex items-center gap-2">
                       <span
                         className={`px-3 py-1 rounded-full text-xs transition-colors ${
@@ -261,7 +280,6 @@ export default function Settings() {
                 {activeTab === "empresa" ? "Dados da Empresa" : "Segurança"}
               </h2>
               {activeTab === "empresa" ? (
-                // Ajustado para 1 coluna no mobile, 2 no desktop
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   {[
                     { label: "Nome Fantasia", value: "Mercearia Central" },
@@ -312,16 +330,20 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* --- MODAL DE CONVIDAR USUÁRIO --- */}
+      {/* --- MODAL DE CADASTRAR USUÁRIO --- */}
       {showInviteModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
           <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
             <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-700">
               <h3 className="text-gray-900 dark:text-white" style={{ fontWeight: 700, fontSize: 18 }}>
-                Cadastrar Vendedor
+                Cadastrar Usuário
               </h3>
               <button
-                onClick={() => setShowInviteModal(false)}
+                onClick={() => {
+                  setShowInviteModal(false);
+                  setInviteError("");
+                  setInviteSuccess("");
+                }}
                 className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center transition-colors"
               >
                 <X className="w-4 h-4 text-gray-500 dark:text-gray-300" />
@@ -333,8 +355,8 @@ export default function Settings() {
                 <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1.5" style={{ fontWeight: 600 }}>Nome Completo *</label>
                 <input
                   type="text"
-                  value={inviteData.name}
-                  onChange={(e) => setInviteData({ ...inviteData, name: e.target.value })}
+                  value={inviteData.nome}
+                  onChange={(e) => setInviteData({ ...inviteData, nome: e.target.value })}
                   className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder="Ex: João da Silva"
                 />
@@ -347,7 +369,7 @@ export default function Settings() {
                   value={inviteData.email}
                   onChange={(e) => setInviteData({ ...inviteData, email: e.target.value })}
                   className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                  placeholder="vendedor@empresa.com"
+                  placeholder="usuario@empresa.com"
                 />
               </div>
 
@@ -355,8 +377,8 @@ export default function Settings() {
                 <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1.5" style={{ fontWeight: 600 }}>Senha Inicial *</label>
                 <input
                   type="password"
-                  value={inviteData.password}
-                  onChange={(e) => setInviteData({ ...inviteData, password: e.target.value })}
+                  value={inviteData.senha}
+                  onChange={(e) => setInviteData({ ...inviteData, senha: e.target.value })}
                   className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   placeholder="Mínimo 6 caracteres"
                 />
@@ -373,11 +395,27 @@ export default function Settings() {
                   <option value="Gestor">Gestor</option>
                 </select>
               </div>
+
+              {/* Mensagens de Feedback */}
+              {inviteError && (
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs px-3 py-2 rounded-lg">
+                  {inviteError}
+                </div>
+              )}
+              {inviteSuccess && (
+                <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs px-3 py-2 rounded-lg">
+                  {inviteSuccess}
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 p-5 border-t border-gray-100 dark:border-gray-700 shrink-0">
               <button
-                onClick={() => setShowInviteModal(false)}
+                onClick={() => {
+                  setShowInviteModal(false);
+                  setInviteError("");
+                  setInviteSuccess("");
+                }}
                 className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 style={{ fontWeight: 600 }}
               >
@@ -385,7 +423,7 @@ export default function Settings() {
               </button>
               <button
                 onClick={handleInvite}
-                disabled={!inviteData.name || !inviteData.email || !inviteData.password || inviting}
+                disabled={!inviteData.nome || !inviteData.email || !inviteData.senha || inviting}
                 className="flex-1 py-3 rounded-xl text-white text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 hover:opacity-90"
                 style={{ background: "linear-gradient(135deg, #1E3A5F, #2B6CB0)", fontWeight: 600 }}
               >
