@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate, Navigate } from "react-router";
 import { useApp } from "../context/AppContext";
 import { ThemeToggle } from "./ThemeToggle"; 
+import { A11yMenu } from "./A11yMenu.tsx"; 
+
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -114,7 +116,6 @@ export default function Layout() {
 
         <nav className="flex-1 px-2 py-3 flex flex-col gap-1 overflow-y-auto">
           {sidebarOpen && (
-            // AQUI: Mudei de text-blue-400/60 para text-blue-200/80 para melhor contraste
             <p className="px-3 py-2 text-blue-200/80 uppercase" style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em" }}>
               <span className="hidden md:inline">Menu Principal</span>
               <span className="md:hidden">Sistema</span>
@@ -130,7 +131,6 @@ export default function Layout() {
                 to={item.path}
                 onClick={() => window.innerWidth < 768 && setSidebarOpen(false)}
                 className={({ isActive }) =>
-                  // AQUI: Item inativo mudou para text-blue-200 ao invés de text-blue-300
                   `${isAjustes ? "flex" : "hidden md:flex"} items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
                     isActive
                       ? "bg-white/15 text-white"
@@ -158,7 +158,6 @@ export default function Layout() {
               {sidebarOpen && (
                 <div className="hidden md:block mx-3 mt-4 mb-1">
                   <div className="border-t border-white/10 pt-3">
-                    {/* AQUI: Ajuste do Acesso restrito para text-blue-200/80 */}
                     <p className="text-blue-200/80 uppercase" style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em" }}>
                       🔒 Acesso Restrito
                     </p>
@@ -189,7 +188,6 @@ export default function Layout() {
         <div className="p-3 border-t border-white/10 flex flex-col gap-1">
           <button
             onClick={handleLogout}
-            // AQUI: Mudei para text-blue-200
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-blue-200 hover:bg-white/10 hover:text-white transition-all ${!sidebarOpen ? "md:justify-center" : ""}`}
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
@@ -220,7 +218,9 @@ export default function Layout() {
             </div>
           </div>
           
+          {/* PAINEL DIREITO DO CABEÇALHO (ONDE ESTÁ O A11YMENU) */}
           <div className="flex items-center gap-3">
+            <A11yMenu /> 
             <ThemeToggle />
             
             <div className="flex items-center gap-2 pl-3 border-l border-gray-100 dark:border-gray-800">

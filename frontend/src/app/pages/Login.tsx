@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useApp } from "../context/AppContext"; // Removemos o UserRole
 import { ThemeToggle } from "../components/ThemeToggle";
+import { A11yMenu } from "../components/A11yMenu";
+
 import {
   ShoppingCart,
   Eye,
@@ -83,7 +85,8 @@ export default function Login() {
         
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-10 transition-colors relative">
           
-          <div className="absolute top-6 right-6 z-10">
+          <div className="absolute top-6 right-6 z-10 flex items-center gap-2">
+            <A11yMenu />
             <ThemeToggle />
           </div>
 
